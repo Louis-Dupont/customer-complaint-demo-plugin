@@ -7,9 +7,13 @@ data, Gmail fixture loaders, or presentation material.
 ## Install in Codex
 
 ```sh
-codex plugin marketplace add <github-owner>/customer-complaint-intelligence-plugin
+codex plugin marketplace add Louis-Dupont/customer-complaint-intelligence-plugin
 codex plugin add customer-complaint-intelligence@jad-customer-complaint-intelligence
 ```
+
+The repository is expected to be public at
+`https://github.com/Louis-Dupont/customer-complaint-intelligence-plugin` so a
+coworker can run these commands without a separate service or credential.
 
 Start a new Codex task after installation.
 
