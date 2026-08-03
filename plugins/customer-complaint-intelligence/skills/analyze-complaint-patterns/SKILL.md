@@ -42,13 +42,18 @@ customer IDs, report that before interpreting the results.
    service volume, severity, consequence, and extraction confidence. Use
    denominators available in the customer table when they answer a different
    question from raw volume.
-5. Use the installed `@visualize` capability to create an interactive
-   visualization from the actual generated analysis data. The visualization
-   must allow a human to move from an overview to the cases behind a finding.
-6. Write `workspace/analysis/findings.md` with the important patterns, the
+5. Write `workspace/analysis/findings.md` with the important patterns, the
    metric and population behind each, the evidence worth investigating, and
    uncertainty or competing explanations. Do not claim that a complaint
    association proves a cause; the goal is a useful fictional business view.
+6. Invoke the installed `@visualize` capability directly on
+   `workspace/analysis/analysis-data.csv` and the generated summary tables.
+   The visualization must allow a human to move from an overview to the cases
+   behind a finding. Do not search plugin directories for visualization
+   instructions or create a second uncontracted HTML output. If the inline
+   visualization surface is unavailable, report that explicitly after leaving
+   the tables and `findings.md`; do not claim the analysis step is complete or
+   loop trying to discover another visualization mechanism.
 
 ## Outputs
 
