@@ -52,11 +52,12 @@ move from a messy inbox to a useful business understanding and then act on it.
 
 ## Suggested sequence
 
-Typical waiting times on the demo machine are approximately: extraction two to
-six minutes, analysis one to three minutes, investigation under one minute,
-and label preview/write-back under thirty seconds. The operator should narrate
-the human question while a step is running rather than implying that the work
-was instantaneous.
+The final full rehearsal took about eight minutes for extraction, nine for
+analysis and visualization, five for evidence investigation, and two for label
+preview plus write-back. Gmail retrieval and writes themselves took seconds;
+most of the time was AI interpretation and artifact creation. For a short live
+demo, start the longer step before the audience arrives or cut the wait in a
+recording rather than implying that the work was instantaneous.
 
 ### 1. Extract
 
