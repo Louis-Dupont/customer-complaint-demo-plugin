@@ -1,6 +1,6 @@
 ---
 name: analyze-complaint-patterns
-description: Analyze an existing source-linked complaint CSV together with a local customer CSV, produce reproducible joined tables, and create a deep interactive visualization of what deserves attention. In the Customer Complaint Demo, a bare invocation uses the defined local handoffs; elsewhere, confirm missing paths or scope. Do not read the inbox, rebuild the register, investigate one finding, or apply Gmail labels.
+description: Analyze an existing Gmail-derived complaint CSV together with a local customer CSV, produce reproducible joined tables, and create a deep interactive visualization of what deserves attention. In the Customer Complaint Demo, a bare invocation uses the defined local handoffs; elsewhere, confirm missing paths or scope. Do not read the inbox, rebuild the register, investigate one finding, or apply Gmail labels.
 ---
 
 # Analyze Complaint Patterns
@@ -8,7 +8,7 @@ description: Analyze an existing source-linked complaint CSV together with a loc
 This skill exists to turn a validated complaint register and a local customer
 table into an explorable analysis. It is the second bounded handoff in the
 workflow: the extraction step owns what was reported; this step helps the human
-see patterns across cases, customers, time and context.
+see patterns across messages, customers, time and context.
 
 ## Readiness
 
@@ -75,8 +75,8 @@ sender emails, report that before interpreting the results.
 The skill must leave these artifacts in `workspace/analysis/`:
 
 - `analysis-data.csv`: one row per complaint message, with the original
-  `sender_email` plus the derived `customer_id`, joined customer fields, and a
-  visible `customer_match_status`.
+  `sender_email`, `subject`, and timestamp plus the derived `customer_id`,
+  joined customer fields, and a visible `customer_match_status`.
 - `summary-by-category.csv`.
 - `summary-by-venue.csv`.
 - `summary-by-route.csv`.
@@ -93,8 +93,10 @@ count, and high/urgent case count visible.
   the analysis output.
 
 The generated tables are the handoff for `investigate-complaint-evidence`.
-Keep the exact source fields and the derived `customer_id` so every selected
-result can return to Gmail without exposing connector identifiers.
+Keep the exact sender, subject, timestamp, and complaint fields plus the
+derived `customer_id`. A later Gmail step can re-find a message using that
+observable tuple without exposing connector identifiers or pretending there is
+a stable URL field.
 
 ## Boundaries
 

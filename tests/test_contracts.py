@@ -12,8 +12,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / "plugins" / "customer-complaint-intelligence" / "skills"
 FIELDS = [
-    "source_url",
     "sender_email",
+    "subject",
     "received_at",
     "problem_category",
     "problem_summary",
@@ -35,8 +35,8 @@ class ContractTests(unittest.TestCase):
             path = Path(directory) / "complaints.csv"
             row = {
                 field: {
-                    "source_url": "https://mail.google.com/mail/u/0/#inbox/thread-1",
                     "sender_email": "customer-1@example.com",
+                    "subject": "Delivery arrived late",
                     "received_at": "2026-01-01",
                     "problem_category": "late_delivery",
                     "problem_summary": "Delivery arrived late",
@@ -63,8 +63,8 @@ class ContractTests(unittest.TestCase):
             output = root / "analysis"
             rows = [
                 {
-                    "source_url": "https://mail.google.com/mail/u/0/#inbox/thread-1",
                     "sender_email": "customer-1@example.com",
+                    "subject": "Delivery arrived late",
                     "received_at": "2026-01-01",
                     "problem_category": "late_delivery",
                     "problem_summary": "Delivery arrived late",
@@ -72,8 +72,8 @@ class ContractTests(unittest.TestCase):
                     "severity": "medium",
                 },
                 {
-                    "source_url": "https://mail.google.com/mail/u/0/#inbox/thread-2",
                     "sender_email": "unknown@example.com",
+                    "subject": "Items missing",
                     "received_at": "2026-01-02",
                     "problem_category": "short_delivery",
                     "problem_summary": "Items missing",
@@ -97,6 +97,7 @@ class ContractTests(unittest.TestCase):
             self.assertEqual(metadata["unmatched_message_count"], 1)
             with (output / "analysis-data.csv").open(encoding="utf-8", newline="") as handle:
                 joined = list(csv.DictReader(handle))
+            self.assertEqual(list(joined[0]), FIELDS + ["month", "customer_match_status", "customer_id", "customer_venue_type", "customer_delivery_route", "customer_weekly_deliveries"])
             self.assertEqual(joined[0]["customer_match_status"], "matched")
             self.assertEqual(joined[0]["customer_id"], "CUST-001")
             self.assertEqual(joined[1]["customer_match_status"], "unknown_sender_email")

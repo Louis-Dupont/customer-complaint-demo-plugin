@@ -10,12 +10,11 @@ from collections import defaultdict
 from datetime import datetime
 from email.utils import parseaddr
 from pathlib import Path
-from urllib.parse import urlparse
 
 
 COMPLAINT_FIELDS = [
-    "source_url",
     "sender_email",
+    "subject",
     "received_at",
     "problem_category",
     "problem_summary",
@@ -105,21 +104,20 @@ def main() -> None:
 
     joined: list[dict[str, object]] = []
     for row in complaints:
-        source_url = row["source_url"].strip()
         sender_email = row["sender_email"].strip().lower()
-        if not source_url:
-            raise SystemExit("complaints CSV contains a row without source_url")
-        parsed_url = urlparse(source_url)
-        if parsed_url.scheme != "https" or parsed_url.netloc != "mail.google.com":
-            raise SystemExit(f"invalid Gmail source_url: {source_url}")
+        subject = row["subject"].strip()
+        if not sender_email:
+            raise SystemExit("complaints CSV contains a row without sender_email")
+        if not subject:
+            raise SystemExit("complaints CSV contains a row without subject")
         try:
             datetime.fromisoformat(row["received_at"].strip().replace("Z", "+00:00"))
         except ValueError as exc:
-            raise SystemExit(f"invalid complaint row with source_url {source_url!r}: {exc}") from exc
+            raise SystemExit(f"invalid complaint row from {sender_email!r} / {subject!r}: {exc}") from exc
         if row["severity"].strip().lower() not in SEVERITIES:
-            raise SystemExit(f"invalid severity for {source_url!r}")
+            raise SystemExit(f"invalid severity for {sender_email!r} / {subject!r}")
         if not row["problem_category"].strip() or not row["problem_summary"].strip():
-            raise SystemExit(f"complaint row {source_url!r} needs category and summary")
+            raise SystemExit(f"complaint row {sender_email!r} / {subject!r} needs category and summary")
         customer = customer_map.get(sender_email)
         output: dict[str, object] = dict(row)
         output["month"] = month(row["received_at"].strip())

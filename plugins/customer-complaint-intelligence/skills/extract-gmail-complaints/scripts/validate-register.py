@@ -8,12 +8,11 @@ import sys
 from datetime import date, datetime
 from email.utils import parseaddr
 from pathlib import Path
-from urllib.parse import urlparse
 
 
 FIELDS = [
-    "source_url",
     "sender_email",
+    "subject",
     "received_at",
     "problem_category",
     "problem_summary",
@@ -51,19 +50,18 @@ def validate(path: Path) -> int:
             count += 1
             if None in row or set(row) != set(FIELDS):
                 fail(f"row {row_number}: row shape does not match the exact header")
-            source_url = row["source_url"].strip()
             sender_email = row["sender_email"].strip()
+            subject = row["subject"].strip()
             category = row["problem_category"].strip()
             summary = row["problem_summary"].strip()
             severity = row["severity"].strip().lower()
 
-            parsed_url = urlparse(source_url)
-            if parsed_url.scheme != "https" or parsed_url.netloc != "mail.google.com":
-                fail(f"row {row_number}: source_url must be an HTTPS Gmail URL")
             if sender_email:
                 parsed_sender = parseaddr(sender_email)[1]
                 if parsed_sender != sender_email or "@" not in sender_email:
                     fail(f"row {row_number}: sender_email must be a normalized email address")
+            if not subject:
+                fail(f"row {row_number}: subject is required")
             if not category:
                 fail(f"row {row_number}: problem_category is required")
             if not summary:

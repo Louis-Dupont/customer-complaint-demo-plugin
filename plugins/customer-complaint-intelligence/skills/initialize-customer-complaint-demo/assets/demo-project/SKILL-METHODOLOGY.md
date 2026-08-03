@@ -8,7 +8,7 @@ An early risk was to create one or two end-to-end skills that silently performed
 
 Instead, we used the natural handoffs in the work as the skill boundaries:
 
-1. `extract-gmail-complaints`: Gmail population to a validated, source-linked complaint CSV.
+1. `extract-gmail-complaints`: Gmail population to a validated, structured message CSV.
 2. `analyze-complaint-patterns`: complaint CSV plus customer CSV to reproducible joined tables, findings, and an interactive visualization.
 3. `investigate-complaint-evidence`: one human-selected finding to a source-backed brief with supporting cases and exceptions.
 4. `apply-complaint-labels`: one approved handling rule to a previewed Gmail change and operation receipt.
@@ -30,7 +30,7 @@ Each skill was treated as a concise responsibility contract. It states:
 
 The frontmatter description carries both positive and negative triggers because it decides when Codex loads the skill. The body concentrates on non-obvious rules rather than explaining things Codex can already reason through.
 
-The extraction handoff preserves only Gmail facts: the source URL, sender email, and complaint fields, one row per matching email. The analysis step is the first place that reads the customer table and joins `sender_email` to `contact_email`, deriving `customer_id` and customer context. The source URL is enough to return from analysis to Gmail; connector message/thread IDs stay internal to the Gmail step. The contracts keep messages, threads, and customers distinct; collapsing message rows would have changed the analysis.
+The extraction handoff preserves only Gmail facts: sender email, subject, timestamp, and complaint fields, one row per matching email. The analysis step is the first place that reads the customer table and joins `sender_email` to `contact_email`, deriving `customer_id` and customer context. Later Gmail steps re-find messages from that observable tuple; connector message/thread IDs stay internal to the Gmail step. The contracts keep messages, threads, and customers distinct; collapsing message rows would have changed the analysis.
 
 ## Where determinism was used
 
@@ -38,7 +38,7 @@ We left semantic work to the model: interpreting varied complaint language, norm
 
 Small scripts were added only where deterministic behavior protected a boundary:
 
-- extraction validates the exact CSV schema, source links, values, and row integrity;
+- extraction validates the exact CSV schema, observable Gmail fields, values, and row integrity;
 - analysis validates and joins the two datasets, then emits reproducible summary tables;
 - Gmail write-back requires an exact preview, explicit human approval, and a receipt.
 

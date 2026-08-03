@@ -1,6 +1,6 @@
 interface:
   display_name: "Extract Gmail Complaints"
-  short_description: "Turn complaint threads into a source-linked CSV"
+  short_description: "Turn complaint emails into a structured CSV"
   default_prompt: "In the marked Customer Complaint Demo project, extract the prepared Gmail population into workspace/complaints.csv using the defined demo scope. Outside that project, ask for the missing scope or output path."
 policy:
   allow_implicit_invocation: true

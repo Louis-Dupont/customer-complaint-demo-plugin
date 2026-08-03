@@ -8,7 +8,7 @@ This demo shows how a person can use Codex to turn that inbox into business unde
 
 ## The skills
 
-- **Extract Gmail complaints** — turns the selected emails into a structured, source-linked CSV.
+- **Extract Gmail complaints** — turns the selected emails into a structured CSV with sender, subject, and complaint details.
 - **Analyze complaint patterns** — combines complaints with customer data and creates a deep interactive visualization.
 - **Investigate complaint evidence** — traces a selected finding back to supporting emails and counterexamples.
 - **Apply complaint labels** — previews and applies a human-approved handling decision in Gmail.

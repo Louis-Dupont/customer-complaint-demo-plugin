@@ -8,7 +8,7 @@ The demo had to make a familiar situation tangible: a team has too many customer
 
 The resulting story is one connected progression:
 
-1. Turn 120 unstructured Gmail complaints into a source-linked register.
+1. Turn 120 unstructured Gmail complaints into a structured message register.
 2. Combine that register with local customer context and visualize the patterns.
 3. Trace one important pattern back to supporting emails and exceptions.
 4. Let the human choose a handling rule, preview it, and apply Gmail labels.
@@ -43,7 +43,7 @@ The final authority remained the end-to-end rehearsal. Offline checks establishe
 - The strongest demo moment is not automation by itself. It is the shift from an inbox that is impossible to grasp manually to a business pattern the human can inspect and act on.
 - Synthetic data needs a designed analytical structure as well as realistic prose. Realistic emails without a deliberate distribution would produce an attractive but inconclusive demo.
 - A broad visible pattern followed by a less obvious joined-data pattern creates a credible analytical reveal. Exceptions make the investigation feel real and show that Codex can challenge the headline.
-- Stable identifiers and source links are what connect analysis back to evidence and later action. Without them, the workflow becomes a sequence of summaries.
+- Observable sender, subject, and timestamp fields are what let later steps re-find evidence and act. Connector IDs and invented links stay out of the handoff.
 - A held-out case is a compact proof of reuse: the work produces an operating capability, not only a one-off report.
 - The live service boundary should be the simplest one that supports the experience. The existing Gmail plugin was sufficient; a dedicated Google Cloud project and custom OAuth path added setup work without improving the actual demo, so that path was removed from the normal flow.
 - Live connectors change details. Gmail normalized synthetic sender and date headers, so customer identity was kept in the body and the analysis avoided depending on timestamps. Sending to a fictional `.example` address created bounce notices; sending the held-out fixture to Bobby's own address avoided that noise.
