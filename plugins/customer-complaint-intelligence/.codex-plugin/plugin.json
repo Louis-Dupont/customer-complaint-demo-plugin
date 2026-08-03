@@ -5,6 +5,15 @@
   "author": {
     "name": "JAD"
   },
+  "repository": "https://github.com/Louis-Dupont/customer-complaint-intelligence-plugin",
+  "license": "MIT",
+  "keywords": [
+    "gmail",
+    "complaints",
+    "analysis",
+    "evidence",
+    "workflow"
+  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Customer Complaint Intelligence",
