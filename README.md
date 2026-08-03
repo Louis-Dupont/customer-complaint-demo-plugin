@@ -1,8 +1,9 @@
 # Customer Complaint Intelligence
 
-This repository is the client-deliverable Codex plugin. It contains reusable
-skills only; it does not contain a fictional company, demo emails, customer
-data, Gmail fixture loaders, or presentation material.
+This repository is the client-deliverable Codex plugin. It contains four
+reusable complaint-workflow skills and an explicit initializer for an isolated
+fictional demo capsule. The initializer carries the demo template as an asset;
+the generated project and its Codex runtime remain separate from this plugin.
 
 ## Install in Codex
 
@@ -16,6 +17,15 @@ The repository is expected to be public at
 coworker can run these commands without a separate service or credential.
 
 Start a new Codex task after installation.
+
+## Initialize the demo capsule
+
+From a fresh Codex environment, invoke `$initialize-customer-complaint-demo`.
+It creates `Customer Complaint Demo` and a dedicated
+`~/.codex-products/customer-complaint-demo`, installs the complaint plugin,
+Gmail, and `@visualize` into that home, and writes a launcher. Authenticate
+Codex and connect Gmail inside the new capsule. The initializer does not send
+or recreate the synthetic Gmail messages.
 
 ## Requirements
 
@@ -32,6 +42,7 @@ Start a new Codex task after installation.
 - `analyze-complaint-patterns`: join the register with customer data and build analysis artifacts.
 - `investigate-complaint-evidence`: inspect one finding through supporting and contradictory source emails.
 - `apply-complaint-labels`: preview and apply an explicitly approved Gmail-labeling decision.
+- `initialize-customer-complaint-demo`: create or remove the isolated demo capsule.
 
 The human invokes each skill separately. No skill runs the complete workflow or
 chooses the business decision silently.

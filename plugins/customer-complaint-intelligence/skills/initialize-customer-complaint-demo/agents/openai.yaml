@@ -1,0 +1,4 @@
+interface:
+  display_name: "Initialize Complaint Demo"
+  short_description: "Create an isolated complaint demo capsule"
+  default_prompt: "Use $initialize-customer-complaint-demo to create the isolated Customer Complaint Demo environment."

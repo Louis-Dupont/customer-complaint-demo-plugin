@@ -1,0 +1,9 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+gmail-token.json
+gmail-fixture-state.json
+gmail-seed-receipt.json
+gmail-reset-receipt.json
+workspace/*
+!workspace/.gitkeep

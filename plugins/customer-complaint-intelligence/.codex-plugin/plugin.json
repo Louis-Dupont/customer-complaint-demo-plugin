@@ -1,7 +1,7 @@
 {
   "name": "customer-complaint-intelligence",
-  "version": "0.1.0",
-  "description": "Bounded Codex skills for turning customer complaint emails into structured evidence, analysis, investigation, and approved Gmail actions.",
+  "version": "0.2.0",
+  "description": "Bounded Codex skills for complaint intelligence plus an isolated Customer Complaint Demo bootstrapper.",
   "author": {
     "name": "JAD"
   },
@@ -18,19 +18,21 @@
   "interface": {
     "displayName": "Customer Complaint Intelligence",
     "shortDescription": "Turn complaint emails into evidence and action.",
-    "longDescription": "Four bounded skills help a human extract complaint data from Gmail, analyze it with local customer data, investigate findings through source emails, and apply approved labels back to Gmail.",
+    "longDescription": "Five bounded skills help a human create an isolated complaint demo capsule, extract complaint data from Gmail, analyze it with local customer data, investigate findings through source emails, and apply approved labels back to Gmail.",
     "developerName": "JAD",
     "category": "Productivity",
     "capabilities": [
       "Extract structured complaint data",
       "Analyze and visualize customer patterns",
       "Investigate source evidence",
-      "Apply approved Gmail labels"
+      "Apply approved Gmail labels",
+      "Create an isolated demo capsule"
     ],
     "defaultPrompt": [
       "Turn my Gmail complaints into a structured CSV.",
       "Analyze the complaint register with my customer data.",
-      "Show the emails supporting this finding."
+      "Show the emails supporting this finding.",
+      "Initialize the isolated Customer Complaint Demo."
     ]
   }
 }

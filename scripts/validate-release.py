@@ -16,6 +16,7 @@ EXPECTED_SKILLS = {
     "analyze-complaint-patterns",
     "investigate-complaint-evidence",
     "apply-complaint-labels",
+    "initialize-customer-complaint-demo",
 }
 
 
@@ -55,8 +56,11 @@ def main() -> None:
 
     assert (PLUGIN / "skills" / "extract-gmail-complaints" / "scripts" / "validate-register.py").is_file()
     assert (PLUGIN / "skills" / "analyze-complaint-patterns" / "scripts" / "prepare-analysis.py").is_file()
-    assert not list(PLUGIN.rglob("*.eml"))
-    assert not list(PLUGIN.rglob("*.csv"))
+    demo_template = PLUGIN / "skills" / "initialize-customer-complaint-demo" / "assets" / "demo-project"
+    assert demo_template.is_dir(), demo_template
+    for fixture in list(PLUGIN.rglob("*.eml")) + list(PLUGIN.rglob("*.csv")):
+        assert fixture.is_relative_to(demo_template), fixture
+    assert not list(PLUGIN.rglob("*.oauth*"))
 
     print(f"validated {PLUGIN.name}: {len(actual_skills)} skills")
 
