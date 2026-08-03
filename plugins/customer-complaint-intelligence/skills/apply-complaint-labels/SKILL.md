@@ -1,6 +1,6 @@
 ---
 name: apply-complaint-labels
-description: Apply an explicitly approved complaint-handling decision to Gmail by previewing the exact matching threads, creating or reusing the requested labels, and recording the result. Use after complaint analysis and human review when the user asks to operationalize a selected rule. Do not use to discover patterns, invent the business decision, or label messages without approval.
+description: Apply an explicitly approved complaint-handling decision to Gmail by previewing the exact matching threads, creating or reusing the requested labels, and recording the result. In the Customer Complaint Demo, a bare invocation prepares the defined demo decision for human approval; elsewhere, require the human's rule and target boundary. Do not use to discover patterns, invent the business decision, or label messages without approval.
 ---
 
 # Apply Complaint Labels
@@ -15,11 +15,32 @@ Require:
 - A complaint register or investigation artifact that identifies the matching Gmail threads.
 - An active Gmail connection with permission to create and apply labels.
 
-If the decision or target set is ambiguous, stop and ask for the missing boundary instead of inferring it from the analysis.
+In the marked Customer Complaint Demo project (a current working directory
+containing `.customer-complaint-demo-project.json` with
+`slug: customer-complaint-demo`), a bare invocation uses this proposed demo
+decision for the preview:
+
+- match cases whose customer is a hotel on the East route and whose complaint
+  category is `short delivery`;
+- add `Demo/Service Recovery` and `Demo/Logistics Investigation`.
+
+Use the current `workspace/complaints.csv` and, when present,
+`workspace/evidence/short-delivery-east-route.md` to resolve exact threads.
+The demo default is a fictional, pre-agreed presentation rule—not an automatic
+approval. Always show the complete preview and wait for the human to approve
+before changing Gmail. If the human supplies another rule or labels, honor it.
+Outside the marked demo project, ask for the decision and target boundary when
+they are missing.
+
+If the decision or target set is ambiguous, stop and ask for the missing
+boundary instead of inferring it from the analysis. The marked demo exception
+above is the only pre-agreed target rule.
 
 ## Procedure
 
-1. Restate the proposed labels, matching rule, and target count.
+1. Resolve and restate the proposed labels, matching rule, and target count.
+   In the marked demo project, use the demo proposal above when the human did
+   not provide one.
 2. Resolve the exact Gmail thread IDs from the current register or evidence artifact.
 3. Expand each approved thread with `gmail_read_email_thread` and collect
    every message ID in that thread. The label tool operates on message IDs, not

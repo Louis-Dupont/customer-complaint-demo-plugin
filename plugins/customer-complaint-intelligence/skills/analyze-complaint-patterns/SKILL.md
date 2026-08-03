@@ -1,6 +1,6 @@
 ---
 name: analyze-complaint-patterns
-description: Analyze an existing source-linked complaint CSV together with a local customer CSV, produce reproducible joined tables, and create a deep interactive visualization of what deserves attention. Use after complaint extraction when the human asks what is happening or which patterns matter. Do not read the inbox, rebuild the register, investigate one finding, or apply Gmail labels.
+description: Analyze an existing source-linked complaint CSV together with a local customer CSV, produce reproducible joined tables, and create a deep interactive visualization of what deserves attention. In the Customer Complaint Demo, a bare invocation uses the defined local handoffs; elsewhere, confirm missing paths or scope. Do not read the inbox, rebuild the register, investigate one finding, or apply Gmail labels.
 ---
 
 # Analyze Complaint Patterns
@@ -19,13 +19,26 @@ Require:
 - A local `customers.csv` with one row per unique `customer_id`.
 - A working project directory in which `workspace/analysis/` can be created.
 
+When the current working project contains `.customer-complaint-demo-project.json`
+with `slug: customer-complaint-demo`, use the demo handoff without asking:
+
+- complaints: `workspace/complaints.csv`
+- customers: `data/customers.csv`
+- output directory: `workspace/analysis`
+
+Use an explicitly supplied path when the human gives one. This default applies
+only to the marked demo project. In a normal client project, ask for any
+missing path or period boundary instead of guessing.
+
 If either input is missing, malformed, duplicated, or has substantial unmatched
 customer IDs, report that before interpreting the results.
 
 ## Procedure
 
-1. Confirm the input paths and the period covered. Do not silently choose a
-   different mailbox, customer table, or date range.
+1. Resolve the input paths and period. In the marked demo project, state the
+   three defaults above and derive the period from the register; otherwise ask
+   when a boundary is missing. Do not silently choose a different mailbox,
+   customer table, or date range.
 2. From the plugin skill directory, run
    `python3 scripts/prepare-analysis.py <complaints.csv> <customers.csv> <output_dir>`
    (for the demo: `python3 scripts/prepare-analysis.py

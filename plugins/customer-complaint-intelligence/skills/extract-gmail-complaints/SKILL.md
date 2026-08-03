@@ -1,6 +1,6 @@
 ---
 name: extract-gmail-complaints
-description: Turn a defined Gmail population of customer complaint threads into a source-linked CSV with one row per complaint case. Use when the human asks to structure complaint emails before analysis; do not use it to discover patterns, join customer data, investigate findings, or change Gmail.
+description: Turn a defined Gmail population of customer complaint threads into a source-linked CSV with one row per complaint case. In the Customer Complaint Demo, a bare invocation uses the demo's prepared Gmail scope and workspace handoff; elsewhere, ask for missing boundaries. Do not use it to discover patterns, join customer data, investigate findings, or change Gmail.
 ---
 
 # Extract Gmail Complaints
@@ -25,6 +25,20 @@ customer file, choose labels, or modify Gmail.
   broader mailbox.
 - An output path supplied by the human. If none is supplied, ask once rather
   than scattering a file in an unexpected directory.
+
+### Customer Complaint Demo defaults
+
+When the current working project contains `.customer-complaint-demo-project.json`
+with `slug: customer-complaint-demo`, the demo has already defined both missing
+boundaries. A bare invocation must use them without asking:
+
+- Gmail query: `label:"Demo/Northstar Complaint Demo" -in:trash`
+- output: `workspace/complaints.csv`
+
+State those defaults briefly, then proceed. If the human supplies a different
+scope or output path, honor the explicit request. This exception is limited to
+the marked demo project; never infer a mailbox scope or output path in a normal
+client project.
 
 ### Output
 
@@ -72,8 +86,9 @@ Field meanings:
 
 ## Procedure
 
-1. Confirm the Gmail scope and output path. Record the scope in the response
-   so the human knows what was covered.
+1. Resolve the scope and output path. In the marked demo project, use the
+   defaults above and record them in the response; in any other project, ask
+   once when either boundary is missing. Do not silently broaden a scope.
 2. Use Gmail's `gmail_search_emails`, paging through all matching messages.
    Search results are message-level: group them by `thread_id` before deciding
    how many cases exist.

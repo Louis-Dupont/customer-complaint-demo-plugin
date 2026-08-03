@@ -1,6 +1,6 @@
 ---
 name: investigate-complaint-evidence
-description: "Investigate one selected customer-complaint finding or follow-up question by tracing it to the complaint register, analysis artifacts, and Gmail source threads. Use when a human wants supporting cases, exceptions, source links, or a concise voice-friendly explanation after complaint analysis. Do not use to build the complaint register, discover broad patterns, apply Gmail labels, or decide the business action."
+description: "Investigate one selected customer-complaint finding or follow-up question by tracing it to the complaint register, analysis artifacts, and Gmail source threads. In the Customer Complaint Demo, a bare invocation uses the defined short-delivery finding; elsewhere, require the human's selected finding. Do not use to build the complaint register, discover broad patterns, apply Gmail labels, or decide the business action."
 ---
 
 # Investigate complaint evidence
@@ -25,11 +25,26 @@ Use the actual outputs of the earlier steps:
 - The connected Gmail mailbox, used to read the source threads referenced by
   `thread_id` or `source_url`.
 
+In the marked Customer Complaint Demo project (a current working directory
+containing `.customer-complaint-demo-project.json` with
+`slug: customer-complaint-demo`), a bare invocation selects the demo finding:
+
+> Investigate the short-delivery pattern among hotel customers on the East
+> route. Show the supporting cases, comparable exceptions, and original emails.
+
+Use `workspace/complaints.csv`, `workspace/analysis/findings.md`, and
+`workspace/analysis/analysis-data.csv`, and write
+`workspace/evidence/short-delivery-east-route.md`. If the human supplies a
+different finding or path, honor it. Outside the marked demo project, ask for a
+selected finding when it is missing.
+
 If a required field, source identifier, or analysis artifact is missing, say exactly what is missing and stop. Never invent a customer, case, count, link, or email interpretation.
 
 ## Procedure
 
-1. Restate the selected finding as one bounded question. Preserve its population,
+1. Resolve and restate the selected finding as one bounded question. In the
+   marked demo project, use the short-delivery finding above when none was
+   supplied. Preserve its population,
    comparison, time range, and metric when they are present. If the request is
    ambiguous, ask one focused clarification instead of choosing a materially
    different question.

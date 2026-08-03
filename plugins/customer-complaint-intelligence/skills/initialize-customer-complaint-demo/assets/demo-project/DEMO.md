@@ -60,7 +60,9 @@ was instantaneous.
 
 ### 1. Extract
 
-Invoke the extraction skill with:
+Invoke the extraction skill. In this marked demo project, a bare skill
+invocation already means the prepared demo scope and
+`workspace/complaints.csv`; you can also use this explicit prompt:
 
 > Search Gmail for `label:"Demo/Northstar Complaint Demo" -in:trash`, then turn those Northstar customer complaint emails into a structured CSV at `workspace/complaints.csv`. Keep one row per complaint case, preserve Gmail links, and show me uncertain fields.
 
@@ -69,7 +71,9 @@ whole demo reviewing the taxonomy.
 
 ### 2. Analyze
 
-Invoke the analysis skill with:
+Invoke the analysis skill. It uses the extracted register, `data/customers.csv`,
+and `workspace/analysis/` automatically in this project; you can also use this
+explicit prompt:
 
 > Combine `workspace/complaints.csv` with `data/customers.csv`. Help me understand what deserves attention, and create an interactive visualization.
 
@@ -82,7 +86,8 @@ Use `@visualize` for the deep analysis moment.
 
 ### 3. Investigate
 
-Use normal conversation or voice:
+Invoke the investigation skill or use normal conversation/voice. A bare skill
+invocation uses the demo's short-delivery East-route finding; you can also ask:
 
 > Investigate the short-delivery pattern. Show the customers and original emails that support it, plus counterexamples.
 
@@ -96,7 +101,9 @@ State the human decision:
 
 > For the current Northstar register, label every case where the customer is a hotel on the East route and the complaint category is short delivery. Apply both `Demo/Service Recovery` and `Demo/Logistics Investigation`. Leave ordinary late-delivery complaints in routine support.
 
-Then invoke the label skill:
+Then invoke the label skill. A bare invocation prepares the demo's proposed
+labels and exact target rule; it still stops for your approval before changing
+Gmail. You can also use this explicit prompt:
 
 > Preview the Gmail labels `Demo/Service Recovery` and `Demo/Logistics Investigation` and the matching threads for that decision.
 

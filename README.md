@@ -50,7 +50,10 @@ project files.
 - `apply-complaint-labels`: preview and apply an explicitly approved Gmail-labeling decision.
 - `initialize-customer-complaint-demo`: create or remove the local demo project.
 
-The human invokes each skill separately. No skill runs the complete workflow or
+In the marked demo project, the workflow skills also carry the demo's defined
+scope and handoff paths, so they can be invoked without repeating setup
+details. The human still invokes each skill separately, inspects the outputs,
+and approves the Gmail write-back; no skill runs the complete workflow or
 chooses the business decision silently.
 
 There is no custom MCP server, hosted JAD service, plugin-specific login, or

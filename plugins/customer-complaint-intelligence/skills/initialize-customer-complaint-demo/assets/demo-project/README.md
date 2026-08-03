@@ -16,4 +16,9 @@ This demo shows how a person can use Codex to turn that inbox into business unde
 
 The human triggers every step, asks the questions, inspects the evidence, and makes the decision. Codex does the heavy lifting across the full dataset.
 
+Because this folder is the marked demo project, you can invoke the workflow
+skills directly in sequence. They use the demo's prepared Gmail scope and
+local handoff files automatically; only the final Gmail change still waits for
+your approval.
+
 Presenter instructions and prompts: [`DEMO.md`](DEMO.md).
