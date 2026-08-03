@@ -48,6 +48,11 @@ environment. If Gmail is already connected, the demo uses that connection. If
 it is not connected, let Gmail surface its native connection flow on the first
 Gmail request. Do not add a separate authentication ceremony.
 
+Creating the welcome task is the final initialization action. Once task
+creation succeeds, do not read the task back, resend the introduction, or
+retry it for cosmetic formatting: the demo must open with one task containing
+one introduction.
+
 The `.eml` files are local scaffolding only. Do not send them, recreate Gmail
 messages, or modify the mailbox during initialization.
 

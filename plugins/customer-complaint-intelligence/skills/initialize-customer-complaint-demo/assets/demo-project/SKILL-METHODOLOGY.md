@@ -61,5 +61,7 @@ The live rehearsal exposed details that static review did not: Gmail search and 
 - Explicit exclusions prevent helpful overreach. Extraction does not analyze, analysis does not read Gmail, investigation does not choose the action, and labeling does not invent the rule.
 - Human authority belongs at the consequential transition. Codex can prepare evidence and the exact target set; the person chooses and approves the operational change.
 - Generic plugin contracts and demo-specific expectations must remain separate. The skill never encodes “23 East-route hotel cases”; the fixture and runbook do.
+- Demo defaults should remove already-settled choices. Once the fixture defines its category vocabulary and meanings, asking the model to redesign them adds delay and variability without improving the handoff.
+- Connector operations need explicit safe shapes: paginate IDs, read bodies in modest batches, retry only failures, and write back only the exact approved message IDs rather than expanding threads.
 - Real forward use is part of skill design. Several important contract refinements appeared only when one skill's actual output became the next skill's input.
 - The four workflow skills form a system through explicit artifacts, not through an orchestrator skill. That makes every step independently useful and keeps ordinary conversation available between them; the fifth skill only establishes the project in which they run.

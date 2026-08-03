@@ -41,6 +41,17 @@ boundaries. A bare invocation must use them without asking:
 - category vocabulary: `late_delivery`, `short_delivery`, `damaged_items`,
   `stained_items`, `wrong_quantity`, `billing`, and `service_change`
 
+That vocabulary is already the marked demo's classification contract. Use
+these meanings directly; do not redesign a taxonomy or invent a rule engine:
+
+- `late_delivery`: timing, delay, missed slot, or late arrival;
+- `short_delivery`: an incomplete delivery or item that is missing/short;
+- `damaged_items`: damaged, torn, broken, or unusable items;
+- `stained_items`: stained or visibly soiled items;
+- `wrong_quantity`: a count or product-mix mismatch without missing stock;
+- `billing`: invoice, price, charge, or credit issue;
+- `service_change`: request to change, pause, or cancel the service.
+
 State those defaults briefly, then proceed. If the human supplies a different
 scope or output path, honor the explicit request. This exception is limited to
 the marked demo project; never infer a mailbox scope or output path in a normal
@@ -112,9 +123,12 @@ Field meanings:
    Complaint Demo, the prepared scope is defined to contain 120 synthetic
    complaint messages, including service-change requests; do not exclude any of
    those 120 messages for being a different complaint category.
-5. Classify each matching message using the row semantics above. Normalize the
-   category vocabulary only after reviewing the whole population so equivalent
-   problems use the same label.
+5. Classify each matching message using the row semantics above. Outside the
+   marked demo, normalize the category vocabulary only after reviewing the
+   whole population so equivalent problems use the same label. In the marked
+   demo, the vocabulary and meanings are already fixed: classify the retrieved
+   population, preserve concise message-derived summaries and consequences,
+   write the CSV, and validate it without another taxonomy-design pass.
 6. Write the exact CSV schema, quoting commas, quotes, and line breaks with a
    standard CSV writer. Do not add extra columns or a second hidden output.
 7. Run `scripts/validate-register.py` from this skill directory against the

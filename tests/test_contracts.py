@@ -126,6 +126,18 @@ class ContractTests(unittest.TestCase):
             )
             self.assertEqual([row["customer_id"] for row in joined], ["CUST-001", "", "", ""])
 
+            with (output / "summary-by-category-venue-route.csv").open(encoding="utf-8", newline="") as handle:
+                combined = list(csv.DictReader(handle))
+            hotel_east = [
+                row for row in combined
+                if row["problem_category"] == "late_delivery"
+                and row["customer_venue_type"] == "hotel"
+                and row["customer_delivery_route"] == "East"
+            ]
+            self.assertEqual(len(hotel_east), 1)
+            self.assertEqual(hotel_east[0]["message_count"], "1")
+            self.assertEqual(hotel_east[0]["unique_customer_count"], "1")
+
     def test_prepare_analysis_requires_customer_id(self) -> None:
         script = SKILLS / "analyze-complaint-patterns" / "scripts" / "prepare-analysis.py"
         with tempfile.TemporaryDirectory() as directory:

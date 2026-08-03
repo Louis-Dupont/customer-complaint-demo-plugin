@@ -158,6 +158,45 @@ def main() -> None:
     write_csv(args.output_dir / "summary-by-month.csv", summarize(joined, "month"), [
         "month", "message_count", "unique_customer_count", "unmatched_message_count", "high_or_urgent_message_count"
     ])
+    combined_rows: list[dict[str, object]] = []
+    grouped: dict[tuple[str, str, str], list[dict[str, object]]] = defaultdict(list)
+    for row in joined:
+        grouped[(
+            str(row.get("problem_category") or "unknown"),
+            str(row.get("customer_venue_type") or "unknown"),
+            str(row.get("customer_delivery_route") or "unknown"),
+        )].append(row)
+    for (category, venue, route), group in sorted(grouped.items()):
+        combined_rows.append({
+            "problem_category": category,
+            "customer_venue_type": venue,
+            "customer_delivery_route": route,
+            "message_count": len(group),
+            "unique_customer_count": len({
+                str(row["customer_id"])
+                for row in group
+                if row["customer_id"] and row.get("customer_match_status") == "matched"
+            }),
+            "unmatched_message_count": sum(
+                1 for row in group if row.get("customer_match_status") != "matched"
+            ),
+            "high_or_urgent_message_count": sum(
+                1 for row in group if str(row["severity"]).lower() in {"high", "urgent"}
+            ),
+        })
+    write_csv(
+        args.output_dir / "summary-by-category-venue-route.csv",
+        combined_rows,
+        [
+            "problem_category",
+            "customer_venue_type",
+            "customer_delivery_route",
+            "message_count",
+            "unique_customer_count",
+            "unmatched_message_count",
+            "high_or_urgent_message_count",
+        ],
+    )
 
     matched = sum(1 for row in joined if row["customer_match_status"] == "matched")
     unmatched = len(joined) - matched

@@ -40,11 +40,10 @@ customer references, report that before interpreting the results.
    three defaults above and derive the period from the register; otherwise ask
    when a boundary is missing. Do not silently choose a different mailbox,
    customer table, or date range.
-2. From the plugin skill directory, run
-   `python3 scripts/prepare-analysis.py <complaints.csv> <customers.csv> <output_dir>`
-   (for the demo: `python3 scripts/prepare-analysis.py
-   <demo>/workspace/complaints.csv <demo>/data/customers.csv
-   <demo>/workspace/analysis`). This is the first step that reads the customer
+2. From the plugin skill directory, run the preparation script, passing every
+   path as its own quoted argument because project paths may contain spaces:
+   `python3 scripts/prepare-analysis.py "<complaints.csv>" "<customers.csv>"
+   "<output_dir>"`. This is the first step that reads the customer
    table and joins the raw `customer_reference` from each message to
    `customers.customer_id`. It preserves blank, ambiguous, and unmatched
    references rather than forcing a customer match, and emits reproducible
@@ -63,10 +62,20 @@ customer references, report that before interpreting the results.
    metric and population behind each, the evidence worth investigating, and
    uncertainty or competing explanations. Do not claim that a complaint
    association proves a cause; the goal is a useful fictional business view.
+   In the marked demo, the connected reveal must be prominent and reproducible:
+   show the total `short_delivery` population, then the subset involving hotel
+   customers on the East route, its unique matched customers, and the remaining
+   short-delivery exceptions. Explain that this segment only becomes visible
+   after joining complaint references to the customer table. Keep other useful
+   observations secondary to this reveal because it is the handoff to the
+   investigation step.
 6. Invoke the installed `@visualize` capability directly on
    `workspace/analysis/analysis-data.csv` and the generated summary tables.
    The visualization must allow a human to move from an overview to the cases
-   behind a finding. Do not search plugin directories for visualization
+   behind a finding. In the marked demo, prefer a focused path—category
+   overview, the hotel/East short-delivery subset versus its exceptions, then
+   the underlying rows—over a generic dashboard with many unrelated controls.
+   Do not search plugin directories for visualization
    instructions or create a second uncontracted HTML output. If the inline
    visualization surface is unavailable, report that explicitly after leaving
    the tables and `findings.md`; do not claim the analysis step is complete or
@@ -83,6 +92,7 @@ The skill must leave these artifacts in `workspace/analysis/`:
 - `summary-by-venue.csv`.
 - `summary-by-route.csv`.
 - `summary-by-month.csv`.
+- `summary-by-category-venue-route.csv`.
 - `analysis-metadata.json`.
 - `findings.md`.
 
