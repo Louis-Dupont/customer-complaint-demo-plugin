@@ -1,40 +1,19 @@
-# Fictional customer complaint demo environment
+# Customer Complaint Demo
 
-This folder is deliberately separate from the GitHub plugin repository. It is
-a dummy client environment used to rehearse and record the demonstration.
+Northstar Linen Services has 120 customer complaints in Gmail. Reading them one by one would take hours—and still would not reveal which problems deserve attention.
 
-The fictional company is a linen-delivery service for hotels, restaurants and
-spas. The starting state is a local customer CSV and an untagged Gmail inbox
-containing realistic complaint fixtures. Codex writes generated artifacts into
-`workspace/` as each bounded skill is invoked.
+This demo shows how a person can use Codex to turn that inbox into business understanding, inspect the evidence, and act on a decision:
 
-## Handoff prerequisites
+**Gmail complaints → structured register → customer analysis → visual insight → supporting evidence → approved action**
 
-The operator needs:
+## The skills
 
-- Codex with the reusable plugin installed and the dedicated Gmail account
-  connected through the official Gmail plugin.
-- The prepared Bobby mailbox. It contains 120 synthetic messages under
-  `Demo/Northstar Complaint Demo` and needs no Google Cloud project or local
-  API credential to run the demo.
+- **Extract Gmail complaints** — turns the selected emails into a structured, source-linked CSV.
+- **Analyze complaint patterns** — combines complaints with customer data and creates a deep interactive visualization.
+- **Investigate complaint evidence** — traces a selected finding back to supporting emails and counterexamples.
+- **Apply complaint labels** — previews and applies a human-approved handling decision in Gmail.
+- **Initialize the demo** — creates the isolated demo environment; it is setup, not part of the business workflow.
 
-The local `.eml` fixtures and setup helpers are demo scaffolding for rebuilding
-or checking the fictional dataset. They are separate from the plugin and no
-credential is included in this folder.
+The human triggers every step, asks the questions, inspects the evidence, and makes the decision. Codex does the heavy lifting across the full dataset.
 
-## Folder map
-
-- `company.md`: the small amount of context a demo operator may show.
-- `data/customers.csv`: local customer context used by the analysis skill.
-- `inbox-fixture/emails/`: reproducible `.eml` messages used to seed Gmail.
-- `setup/`: demo-only generation, seeding and reset helpers.
-- `workspace/`: starts empty and receives the real skill handoffs.
-
-## Starting the demo
-
-1. Install/connect the official Gmail plugin if needed:
-   `codex plugin add gmail@openai-curated`.
-2. Connect the dedicated Gmail account through the Gmail plugin.
-3. Run the setup helper described in `setup/README.md`.
-4. Start a fresh Codex task with both plugins installed.
-5. Follow `DEMO.md`.
+Presenter instructions and prompts: [`DEMO.md`](DEMO.md).
