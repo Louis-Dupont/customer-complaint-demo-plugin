@@ -1,0 +1,7 @@
+interface:
+  display_name: "Investigate complaint evidence"
+  short_description: "Trace a finding to supporting and exception cases"
+  default_prompt: "Investigate this complaint finding and show me the supporting cases, exceptions, and source emails."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Analyze complaint patterns"
+  short_description: "Analyze complaint cases with customer context"
+  default_prompt: "Combine the complaint register with customer data and show me what deserves attention."
+
+policy:
+  allow_implicit_invocation: true

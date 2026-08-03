@@ -1,0 +1,20 @@
+{
+  "name": "jad-customer-complaint-intelligence",
+  "interface": {
+    "displayName": "JAD Customer Complaint Intelligence"
+  },
+  "plugins": [
+    {
+      "name": "customer-complaint-intelligence",
+      "source": {
+        "source": "local",
+        "path": "./plugins/customer-complaint-intelligence"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

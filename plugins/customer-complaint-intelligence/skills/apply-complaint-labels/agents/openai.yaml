@@ -1,0 +1,7 @@
+interface:
+  display_name: "Apply complaint labels"
+  short_description: "Apply an approved complaint rule to Gmail"
+  default_prompt: "Preview and apply the approved complaint labels to matching Gmail threads."
+
+policy:
+  allow_implicit_invocation: true
