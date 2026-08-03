@@ -34,10 +34,13 @@ marker and continue only when it is the valid generated demo; never overwrite
 or silently repair another directory.
 
 Use Codex's project and task tools to find the exact newly registered project,
-then create and open one task in it. Ask the task to respond with exactly this
-introduction, using the absolute clickable README path:
+then create and open one task in it. The task's input must be an explicit
+response instruction—not the welcome copy alone. Send this prompt, replacing
+the README placeholder with its absolute clickable path:
 
 ```text
+Respond with exactly the following two paragraphs and nothing else:
+
 Welcome to the Customer Complaint Demo. You can explore how Codex helps turn a crowded support inbox into a clearer understanding of what customers are experiencing—and move from insight to action.
 
 Start with [README.md](ABSOLUTE_README_PATH).
