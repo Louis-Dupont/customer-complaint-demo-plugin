@@ -9,8 +9,8 @@ description: Turn a defined Gmail population of customer complaint threads into 
 
 This skill performs one bounded handoff: it turns unstructured Gmail complaint
 threads into a stable, source-linked complaint register that another step can
-analyze. It preserves the distinction between messages, threads, and complaint
-cases, and keeps uncertainty visible through `extraction_confidence`.
+analyze. The source URL is the human-facing trace key; Gmail message and thread
+identifiers remain connector/runtime details and are not exported.
 
 Stop after the validated CSV exists. Do not summarize business patterns, join a
 customer file, choose labels, or modify Gmail.
@@ -45,25 +45,23 @@ client project.
 Write one UTF-8 CSV at the agreed path with this exact header and column order:
 
 ```text
-case_id,thread_id,source_url,customer_id,received_at,problem_category,problem_summary,consequence,severity,extraction_confidence
+source_url,customer_id,received_at,problem_category,problem_summary,consequence,severity
 ```
 
 One row represents one customer-reported problem (a complaint case), not one
-email message. Repeated follow-up messages about the same problem in one
-thread remain one row. If a thread contains genuinely separate problems,
-create one row per problem and give each row the same `thread_id` and
-`source_url`. If the boundary is unclear, keep one case and lower confidence
-instead of inventing a split.
+email message. Repeated follow-up messages about the same problem in one thread
+remain one row. If a thread contains genuinely separate problems, create one
+row per problem and keep the same `source_url` when the source is the same. If
+the boundary is unclear, keep one case and describe the ambiguity in the
+summary or consequence rather than inventing an identifier.
 
 Field meanings:
 
-- `case_id`: non-empty identifier unique within the CSV. Derive it
-  deterministically from the source thread and issue number (for example,
-  `case-<thread_id>-1`); do not use random IDs.
-- `thread_id`: the Gmail thread ID for the source evidence.
 - `source_url`: a direct Gmail URL for that thread. Preserve a URL returned by
   Gmail; if only the ID is available, use the canonical authenticated Gmail
-  thread URL for that ID.
+  thread URL for that ID. This is the only source traceability field in the
+  handoff; use it to return to the source when a later step needs to inspect
+  the email.
 - `customer_id`: an explicit, stable customer identifier found in the message
   or an already-established mailbox mapping. Leave it blank when unavailable;
   never infer or invent one from a name or address.
@@ -79,10 +77,6 @@ Field meanings:
   is stated; do not turn a guess into a consequence.
 - `severity`: one of `low`, `medium`, `high`, `urgent`, or `unknown`. Base it
   on the reported impact and urgency, not on a later business interpretation.
-- `extraction_confidence`: a numeric value from `0` to `1` describing how
-  directly the row is supported by the source and how clear its case boundary
-  is. This is extraction confidence, not probability that the complaint is
-  true and not business severity.
 
 ## Procedure
 
@@ -93,11 +87,13 @@ Field meanings:
    `next_page_token` is empty. Otherwise use `gmail_search_emails` with the
    same pagination rule. Accumulate every unique message ID before reading any
    body; never repeat the first page as a substitute for the next token.
-   Search results are message-level: group the returned records by
-   `thread_id` before deciding how many cases exist.
+   Search results are message-level: group the returned records by thread
+   internally before deciding how many cases exist, but do not export that
+   internal identifier.
 3. Read all candidate bodies with `gmail_batch_read_email` in connector-sized
    chunks (up to 100 IDs per call). This is the normal path, not a fallback.
-   Preserve the original message ID, thread ID, and source URL. Use
+   Preserve the original message/thread identifiers internally and retain the
+   source URL in each output row. Use
    `gmail_read_email_thread` only once for a thread that genuinely has more
    than one matching message, or when the batch body is missing or leaves the
    case boundary unresolved. Never read every unique thread one at a time.
@@ -117,9 +113,8 @@ Field meanings:
    CSV. Fix malformed output before reporting success; do not hand-edit the
    CSV to conceal an extraction problem.
 8. Report the output path, search scope, number of messages searched, unique
-   threads inspected, complaint cases written, excluded messages/threads, and
-   rows with confidence below `0.7`. In the marked demo project, stop before
-   declaring success if the complete paginated search does not yield exactly
+   threads inspected, complaint cases written, and excluded messages/threads.
+   In the marked demo project, stop before declaring success if the complete paginated search does not yield exactly
    120 messages or if the register does not contain exactly 120 rows; report
    the discrepancy instead of silently presenting a partial register.
 
@@ -127,7 +122,7 @@ Field meanings:
 
 - If Gmail is unavailable, stop and explain that the mailbox connection must
   be restored.
-- If a matching thread cannot be read, its ID and URL cannot be preserved, or
+- If a matching thread cannot be read, its source URL cannot be preserved, or
   pagination is incomplete, stop before declaring the register complete and
   report the unresolved boundary.
 - If no complaints match the confirmed scope, write a header-only CSV and

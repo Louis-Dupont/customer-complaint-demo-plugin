@@ -41,10 +41,12 @@ above is the only pre-agreed target rule.
 1. Resolve and restate the proposed labels, matching rule, and target count.
    In the marked demo project, use the demo proposal above when the human did
    not provide one.
-2. Resolve the exact Gmail thread IDs from the current register or evidence artifact.
+2. Resolve the exact Gmail threads from the `source_url` values in the current
+   register or evidence artifact. The URL is the human-facing trace key; any
+   Gmail IDs needed by the connector are internal runtime values.
 3. Expand each approved thread with `gmail_read_email_thread` and collect
    every message ID in that thread. The label tool operates on message IDs, not
-   thread IDs; preserve both identifiers in the preview and receipt.
+   URLs, so keep the connector IDs only in the operational preview and receipt.
 4. Show a preview containing the labels, every target thread, its expanded
    message IDs, and links where available.
 5. Ask the human to approve the preview.
@@ -52,7 +54,8 @@ above is the only pre-agreed target rule.
    message IDs, the approved label names as arrays, and
    `create_missing_labels: true`.
 7. Write a compact operation receipt to `workspace/actions/` containing the
-   rule, approval, applied labels, thread IDs, message IDs, and timestamp.
+   rule, approval, applied labels, source URLs, connector message IDs, and
+   timestamp.
 
 Do not send, archive, delete, or modify message content. Do not apply a broader Gmail search than the approved target set.
 
@@ -63,7 +66,9 @@ Write one JSON receipt under `workspace/actions/` containing:
 - `decision`: the human-approved matching rule.
 - `label_names`: the exact labels requested.
 - `approved`: whether the human approved the preview.
-- `thread_ids`: the approved Gmail thread IDs.
+- `source_urls`: the source links for the approved complaint rows.
+- `thread_ids`: internal Gmail thread IDs used by the connector, if needed for
+  the operational receipt; do not copy them into `complaints.csv`.
 - `message_ids`: the expanded Gmail message IDs sent to the label tool.
 - `applied_message_ids`: the IDs reported as changed by Gmail.
 - `unapplied_message_ids`: any IDs that could not be changed and why.

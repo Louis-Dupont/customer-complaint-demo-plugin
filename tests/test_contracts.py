@@ -12,8 +12,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / "plugins" / "customer-complaint-intelligence" / "skills"
 FIELDS = [
-    "case_id",
-    "thread_id",
     "source_url",
     "customer_id",
     "received_at",
@@ -21,7 +19,6 @@ FIELDS = [
     "problem_summary",
     "consequence",
     "severity",
-    "extraction_confidence",
 ]
 
 
@@ -38,8 +35,6 @@ class ContractTests(unittest.TestCase):
             path = Path(directory) / "complaints.csv"
             row = {
                 field: {
-                    "case_id": "case-1",
-                    "thread_id": "thread-1",
                     "source_url": "https://mail.google.com/mail/u/0/#inbox/thread-1",
                     "customer_id": "CUST-001",
                     "received_at": "2026-01-01",
@@ -47,7 +42,6 @@ class ContractTests(unittest.TestCase):
                     "problem_summary": "Delivery arrived late",
                     "consequence": "",
                     "severity": "medium",
-                    "extraction_confidence": "0.9",
                 }[field]
                 for field in FIELDS
             }
@@ -69,8 +63,6 @@ class ContractTests(unittest.TestCase):
             output = root / "analysis"
             rows = [
                 {
-                    "case_id": "case-1",
-                    "thread_id": "thread-1",
                     "source_url": "https://mail.google.com/mail/u/0/#inbox/thread-1",
                     "customer_id": "CUST-001",
                     "received_at": "2026-01-01",
@@ -78,11 +70,8 @@ class ContractTests(unittest.TestCase):
                     "problem_summary": "Delivery arrived late",
                     "consequence": "",
                     "severity": "medium",
-                    "extraction_confidence": "0.9",
                 },
                 {
-                    "case_id": "case-2",
-                    "thread_id": "thread-2",
                     "source_url": "https://mail.google.com/mail/u/0/#inbox/thread-2",
                     "customer_id": "CUST-999",
                     "received_at": "2026-01-02",
@@ -90,7 +79,6 @@ class ContractTests(unittest.TestCase):
                     "problem_summary": "Items missing",
                     "consequence": "Emergency purchase",
                     "severity": "high",
-                    "extraction_confidence": "0.7",
                 },
             ]
             self.write_csv(complaints, FIELDS, rows)

@@ -13,8 +13,6 @@ from urllib.parse import urlparse
 
 
 COMPLAINT_FIELDS = [
-    "case_id",
-    "thread_id",
     "source_url",
     "customer_id",
     "received_at",
@@ -22,7 +20,6 @@ COMPLAINT_FIELDS = [
     "problem_summary",
     "consequence",
     "severity",
-    "extraction_confidence",
 ]
 SEVERITIES = {"low", "medium", "high", "urgent", "unknown"}
 
@@ -65,7 +62,6 @@ def summarize(rows: list[dict[str, object]], group_field: str) -> list[dict[str,
             if row["customer_id"] and row.get("customer_match_status") == "matched"
         }
         urgent = sum(1 for row in group if str(row["severity"]).lower() in {"high", "urgent"})
-        confidence = [float(row["extraction_confidence"]) for row in group]
         summaries.append(
             {
                 group_field: key,
@@ -75,7 +71,6 @@ def summarize(rows: list[dict[str, object]], group_field: str) -> list[dict[str,
                     1 for row in group if row.get("customer_match_status") != "matched"
                 ),
                 "high_or_urgent_case_count": urgent,
-                "average_extraction_confidence": round(sum(confidence) / len(confidence), 3),
             }
         )
     return summaries
@@ -101,35 +96,22 @@ def main() -> None:
         customer_map[customer_id] = row
 
     joined: list[dict[str, object]] = []
-    seen_case_ids: set[str] = set()
-    thread_urls: dict[str, str] = {}
     for row in complaints:
         customer_id = row["customer_id"].strip()
-        case_id = row["case_id"].strip()
-        thread_id = row["thread_id"].strip()
         source_url = row["source_url"].strip()
-        if not case_id or not thread_id or not source_url:
-            raise SystemExit("complaints CSV contains a row without case/thread/source identity")
-        if case_id in seen_case_ids:
-            raise SystemExit(f"duplicate case_id: {case_id}")
-        seen_case_ids.add(case_id)
+        if not source_url:
+            raise SystemExit("complaints CSV contains a row without source_url")
         parsed_url = urlparse(source_url)
         if parsed_url.scheme != "https" or parsed_url.netloc != "mail.google.com":
-            raise SystemExit(f"invalid Gmail source_url for {case_id}")
-        prior_url = thread_urls.setdefault(thread_id, source_url)
-        if prior_url != source_url:
-            raise SystemExit(f"thread_id maps to multiple source URLs: {thread_id}")
+            raise SystemExit(f"invalid Gmail source_url: {source_url}")
         try:
             datetime.fromisoformat(row["received_at"].strip().replace("Z", "+00:00"))
-            confidence = float(row["extraction_confidence"])
         except ValueError as exc:
-            raise SystemExit(f"invalid complaint row {row['case_id']!r}: {exc}") from exc
-        if not 0 <= confidence <= 1:
-            raise SystemExit(f"invalid extraction_confidence for {row['case_id']!r}")
+            raise SystemExit(f"invalid complaint row with source_url {source_url!r}: {exc}") from exc
         if row["severity"].strip().lower() not in SEVERITIES:
-            raise SystemExit(f"invalid severity for {row['case_id']!r}")
+            raise SystemExit(f"invalid severity for {source_url!r}")
         if not row["problem_category"].strip() or not row["problem_summary"].strip():
-            raise SystemExit(f"complaint row {row['case_id']!r} needs category and summary")
+            raise SystemExit(f"complaint row {source_url!r} needs category and summary")
         customer = customer_map.get(customer_id)
         output: dict[str, object] = dict(row)
         output["month"] = month(row["received_at"].strip())
@@ -154,16 +136,16 @@ def main() -> None:
     ] + [f"customer_{key}" for key in customers[0] if key != "customer_id"]
     write_csv(args.output_dir / "analysis-data.csv", joined, joined_fields)
     write_csv(args.output_dir / "summary-by-category.csv", summarize(joined, "problem_category"), [
-        "problem_category", "case_count", "unique_customer_count", "unmatched_case_count", "high_or_urgent_case_count", "average_extraction_confidence"
+        "problem_category", "case_count", "unique_customer_count", "unmatched_case_count", "high_or_urgent_case_count"
     ])
     write_csv(args.output_dir / "summary-by-venue.csv", summarize(joined, "customer_venue_type"), [
-        "customer_venue_type", "case_count", "unique_customer_count", "unmatched_case_count", "high_or_urgent_case_count", "average_extraction_confidence"
+        "customer_venue_type", "case_count", "unique_customer_count", "unmatched_case_count", "high_or_urgent_case_count"
     ])
     write_csv(args.output_dir / "summary-by-route.csv", summarize(joined, "customer_delivery_route"), [
-        "customer_delivery_route", "case_count", "unique_customer_count", "unmatched_case_count", "high_or_urgent_case_count", "average_extraction_confidence"
+        "customer_delivery_route", "case_count", "unique_customer_count", "unmatched_case_count", "high_or_urgent_case_count"
     ])
     write_csv(args.output_dir / "summary-by-month.csv", summarize(joined, "month"), [
-        "month", "case_count", "unique_customer_count", "unmatched_case_count", "high_or_urgent_case_count", "average_extraction_confidence"
+        "month", "case_count", "unique_customer_count", "unmatched_case_count", "high_or_urgent_case_count"
     ])
 
     matched = sum(1 for row in joined if row["customer_match_status"] == "matched")

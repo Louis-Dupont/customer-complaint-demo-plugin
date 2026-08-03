@@ -52,7 +52,7 @@ customer IDs, report that before interpreting the results.
    customers.
 4. Explore useful views of the complete joined population: problem category,
    customer reach, venue or segment, route or other customer dimensions, time,
-   service volume, severity, consequence, and extraction confidence. Use
+   service volume, severity, and consequence. Use
    denominators available in the customer table when they answer a different
    question from raw volume.
 5. Write `workspace/analysis/findings.md` with the important patterns, the
@@ -82,7 +82,7 @@ The skill must leave these artifacts in `workspace/analysis/`:
 - `findings.md`.
 
 Each summary keeps case count, matched unique-customer count, unmatched-case
-count, high/urgent case count, and average extraction confidence visible.
+count, and high/urgent case count visible.
 
 - An interactive visualization shown in the Codex conversation through
   `@visualize`. If the human explicitly asks to preserve it, export it to
@@ -90,8 +90,8 @@ count, high/urgent case count, and average extraction confidence visible.
   the analysis output.
 
 The generated tables are the handoff for `investigate-complaint-evidence`.
-Keep the exact `case_id`, `thread_id`, `customer_id`, and `source_url` columns
-so every selected result can return to Gmail.
+Keep the exact `source_url`, `customer_id`, and complaint fields so every
+selected result can return to Gmail without exposing connector identifiers.
 
 ## Boundaries
 

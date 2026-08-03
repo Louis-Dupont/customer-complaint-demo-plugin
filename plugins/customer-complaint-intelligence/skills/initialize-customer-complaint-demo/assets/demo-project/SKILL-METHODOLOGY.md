@@ -30,7 +30,7 @@ Each skill was treated as a concise responsibility contract. It states:
 
 The frontmatter description carries both positive and negative triggers because it decides when Codex loads the skill. The body concentrates on non-obvious rules rather than explaining things Codex can already reason through.
 
-The handoff contracts preserve `case_id`, `thread_id`, `customer_id`, and `source_url`. Those fields make the chain inspectable from Gmail to analysis, evidence, and write-back. The contracts also keep messages, threads, complaint cases, and customers distinct; collapsing those units would have changed the analysis.
+The handoff contracts preserve the source URL, customer ID, and business fields. The source URL is enough to return from analysis to Gmail; connector message/thread IDs stay internal to the Gmail step. The contracts also keep messages, threads, complaint cases, and customers distinct; collapsing those units would have changed the analysis.
 
 ## Where determinism was used
 
@@ -38,7 +38,7 @@ We left semantic work to the model: interpreting varied complaint language, norm
 
 Small scripts were added only where deterministic behavior protected a boundary:
 
-- extraction validates the exact CSV schema, identifiers, values, and row integrity;
+- extraction validates the exact CSV schema, source links, values, and row integrity;
 - analysis validates and joins the two datasets, then emits reproducible summary tables;
 - Gmail write-back requires an exact preview, explicit human approval, and a receipt.
 

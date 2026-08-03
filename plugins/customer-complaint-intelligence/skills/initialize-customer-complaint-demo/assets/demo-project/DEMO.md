@@ -64,7 +64,7 @@ Invoke the extraction skill. In this marked demo project, a bare skill
 invocation already means the prepared demo scope and
 `workspace/complaints.csv`; you can also use this explicit prompt:
 
-> Search Gmail for `label:"Demo/Northstar Complaint Demo" -in:trash`, then turn those Northstar customer complaint emails into a structured CSV at `workspace/complaints.csv`. Keep one row per complaint case, preserve Gmail links, and show me uncertain fields.
+> Search Gmail for `label:"Demo/Northstar Complaint Demo" -in:trash`, then turn those Northstar customer complaint emails into a structured CSV at `workspace/complaints.csv`. Keep one row per complaint case, preserve Gmail links, and leave missing fields blank.
 
 Show `workspace/complaints.csv` and one or two source links. Do not spend the
 whole demo reviewing the taxonomy.
@@ -124,7 +124,7 @@ Then ask:
 
 > Search only the held-out Northstar message (the one with the held-out subject or fixture label) and extract it to `workspace/complaints-heldout.csv`. Process it using the understanding we just developed and show me how it should be handled.
 
-Use the label skill with the exact held-out thread ID after the human approves the
+Use the label skill with the held-out source link after the human approves the
 same two labels. This demonstrates reuse without rerunning the original
 120-message analysis.
 
