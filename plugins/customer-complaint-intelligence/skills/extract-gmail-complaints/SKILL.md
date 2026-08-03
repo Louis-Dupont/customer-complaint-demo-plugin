@@ -89,17 +89,24 @@ Field meanings:
 1. Resolve the scope and output path. In the marked demo project, use the
    defaults above and record them in the response; in any other project, ask
    once when either boundary is missing. Do not silently broaden a scope.
-2. Use Gmail's `gmail_search_emails`, paging through all matching messages.
-   Search results are message-level: group them by `thread_id` before deciding
-   how many cases exist.
-3. Read the bodies needed to classify every candidate thread with
-   `gmail_batch_read_email` where available, and expand a full thread with
-   `gmail_read_email_thread` when replies or follow-ups affect the case
-   boundary.
-   Preserve the original thread ID and URL.
+2. Use Gmail's ID-only `gmail_search_email_ids` when available, paging until
+   `next_page_token` is empty. Otherwise use `gmail_search_emails` with the
+   same pagination rule. Accumulate every unique message ID before reading any
+   body; never repeat the first page as a substitute for the next token.
+   Search results are message-level: group the returned records by
+   `thread_id` before deciding how many cases exist.
+3. Read all candidate bodies with `gmail_batch_read_email` in connector-sized
+   chunks (up to 100 IDs per call). This is the normal path, not a fallback.
+   Preserve the original message ID, thread ID, and source URL. Use
+   `gmail_read_email_thread` only once for a thread that genuinely has more
+   than one matching message, or when the batch body is missing or leaves the
+   case boundary unresolved. Never read every unique thread one at a time.
 4. Exclude messages that are clearly not customer complaints when the scope
    also contains unrelated mail. Report the excluded count; do not silently
-   imply that the mailbox was entirely complaints.
+   imply that the mailbox was entirely complaints. In the marked Customer
+   Complaint Demo, the prepared scope is defined to contain 120 synthetic
+   complaint cases, including service-change requests; do not exclude any of
+   those 120 messages for being a different complaint category.
 5. Classify each complaint thread into one or more cases using the row
    semantics above. Keep follow-ups for the same issue together. Normalize the
    category vocabulary only after reviewing the whole population so equivalent
@@ -111,7 +118,10 @@ Field meanings:
    CSV to conceal an extraction problem.
 8. Report the output path, search scope, number of messages searched, unique
    threads inspected, complaint cases written, excluded messages/threads, and
-   rows with confidence below `0.7`.
+   rows with confidence below `0.7`. In the marked demo project, stop before
+   declaring success if the complete paginated search does not yield exactly
+   120 messages or if the register does not contain exactly 120 rows; report
+   the discrepancy instead of silently presenting a partial register.
 
 ## Failure and stopping rules
 
