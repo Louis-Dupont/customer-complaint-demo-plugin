@@ -14,19 +14,20 @@ Turn one human-selected finding or question into a source-backed evidence brief.
 Use the actual outputs of the earlier steps:
 
 - `workspace/complaints.csv`, with these semantic fields:
-  `sender_email`, `subject`, `received_at`, `problem_category`,
+  `subject`, `customer_reference`, `received_at`, `problem_category`,
   `problem_summary`, `consequence`, and `severity`.
 - `workspace/analysis/analysis-data.csv`, where the analysis step has joined
-  each `sender_email` to a derived `customer_id` and customer context.
+  each raw `customer_reference` to a derived `customer_id` and customer
+  context when a match is available.
 - The selected finding or question, supplied in the user's message or selected
   from the analysis output.
 - `workspace/analysis/findings.md` and
   `workspace/analysis/analysis-data.csv` (or the equivalent paths named by the
   analysis step).
-- The connected Gmail mailbox, used to read the source threads referenced by
-  the sender/subject/timestamp tuple. Gmail identifiers needed by the
-  connector are resolved at read time and are not required in the exported
-  register.
+- The connected Gmail mailbox, used to read source messages located from their
+  subject, timestamp, and—when present—customer reference. Gmail identifiers
+  needed by the connector are resolved at read time and are not required in the
+  exported register.
 
 In the marked Customer Complaint Demo project (a current working directory
 containing `.customer-complaint-demo-project.json` with
@@ -58,16 +59,17 @@ If a required field, source locator, or analysis artifact is missing, say exactl
    - **Supporting messages**: rows that meet the finding's stated condition.
    - **Contradictory or exception messages**: comparable rows that weaken, qualify,
      or fail the apparent pattern.
-4. Use each source row as one complaint message. Use the sender/subject/timestamp
-   tuple to locate it again and deduplicate only when the same message appears
-   twice in the artifacts.
+4. Use each source row as one complaint message. Use its subject, timestamp,
+   and customer reference when available to locate it again, and deduplicate
+   only when the same message appears twice in the artifacts.
    Count affected customers by the `customer_id` derived in
    `analysis-data.csv`. Keep repeat contacts visible when they explain volume
    or the finding. State which denominator each count uses.
-5. Search Gmail using the sender, subject, and timestamp, then read the relevant
-   message or thread with `gmail_read_email_thread` when follow-ups,
+5. Search Gmail using the subject, timestamp, and customer reference when
+   available, then read the relevant message or thread with
+   `gmail_read_email_thread` when follow-ups,
    corrections, or later resolution change the interpretation. Keep source
-   details tied to that observable tuple.
+   details tied to those observable values.
 6. Compare the structured row with the source email. Preserve reported wording
    that materially explains the consequence, but summarize rather than copying a
    whole thread. Mark unresolved or conflicting information as unknown.
@@ -85,8 +87,9 @@ The report must contain these sections, in this order:
 2. **Scope and method** — source artifacts, time range, population, metric,
    comparator, and whether counts are messages or customers.
 3. **Answer** — the narrow conclusion supported by the selected evidence.
-4. **Supporting messages** — a table with `sender_email`, `subject`, derived
-   `customer_id`, date, `problem_category`, and concise evidence from the email.
+4. **Supporting messages** — a table with `customer_reference`, `subject`,
+   derived `customer_id`, date, `problem_category`, and concise evidence from
+   the email.
 5. **Contradictory or exception messages** — the same traceable fields for messages
    that qualify or challenge the finding. Write “none found in the inspected
    scope” only after checking that scope.
@@ -117,7 +120,7 @@ not silently turn a descriptive complaint pattern into a confirmed cause.
 ## Completion
 
 Finish when the evidence brief exists at the agreed path, every material message
-has a derived customer identifier when matched and an observable source tuple,
+has a derived customer identifier when matched and observable source values,
 supporting and exception sets
 are explicit, scope and denominators are stated, and the human has received a
 concise answer. Do not continue into labeling or end-to-end orchestration.

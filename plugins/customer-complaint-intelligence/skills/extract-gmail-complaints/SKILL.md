@@ -9,11 +9,12 @@ description: Turn a defined Gmail population of customer complaint messages into
 
 This skill performs one bounded handoff: it turns unstructured Gmail complaint
 messages into a stable complaint register that another step can analyze. It
-records only what can be extracted from Gmail. The sender email is the raw join
-key that the later analysis step can map to local customer data. The subject and
-timestamp let a later step re-find the message without pretending that a
-constructed URL is a source field; Gmail message and thread identifiers remain
-connector/runtime details and are not exported.
+records only what can be extracted from Gmail. A customer reference is copied
+from the message body when the message states one; the later analysis step can
+map that raw value to local customer data. The subject and timestamp let a later
+step re-find the message without pretending that a constructed URL is a source
+field; Gmail message and thread identifiers remain connector/runtime details
+and are not exported.
 
 Stop after the validated CSV exists. Do not summarize business patterns, join a
 customer file, choose labels, or modify Gmail.
@@ -37,6 +38,8 @@ boundaries. A bare invocation must use them without asking:
 
 - Gmail query: `label:"Demo/Northstar Complaint Demo" -in:trash`
 - output: `workspace/complaints.csv`
+- category vocabulary: `late_delivery`, `short_delivery`, `damaged_items`,
+  `stained_items`, `wrong_quantity`, `billing`, and `service_change`
 
 State those defaults briefly, then proceed. If the human supplies a different
 scope or output path, honor the explicit request. This exception is limited to
@@ -48,27 +51,32 @@ client project.
 Write one UTF-8 CSV at the agreed path with this exact header and column order:
 
 ```text
-sender_email,subject,received_at,problem_category,problem_summary,consequence,severity
+subject,customer_reference,received_at,problem_category,problem_summary,consequence,severity
 ```
 
 One row represents one matching Gmail message. Repeated follow-up messages
 about the same problem remain separate rows. Do not invent a case identifier or
 collapse the population to one row per thread.
 
+Do not add any other columns: in particular, no sender email, Gmail thread or
+message ID, case ID, confidence, or source URL belongs in this handoff.
+
 Field meanings:
 
-- `sender_email`: the normalized email address of the customer sender for the
-  complaint. Extract it from Gmail's sender metadata; do not derive a customer
-  ID from it at this stage. Leave it blank only when Gmail provides no usable
-  sender address.
 - `subject`: the exact Gmail subject for this message. Preserve it so a later
   step can locate the source again without exporting a connector identifier.
+- `customer_reference`: the customer reference explicitly written in the
+  message body (for example, `CUST-042` or `CUST-??`). Copy the stated value
+  verbatim, apart from surrounding whitespace. Do not invent, repair, or look
+  up a value from the sender, signature, subject, or customer table. Leave it
+  blank only when the message does not state one.
 - `received_at`: date or timestamp of this message, normalized to ISO 8601
   (`YYYY-MM-DD` or RFC 3339 datetime).
-- `problem_category`: a short, normalized category. Derive a small vocabulary
-  from the complete population and reuse equivalent category names; do not
-  create a unique category from each sentence. Use `other` when the complaint
-  is real but no stable category fits.
+- `problem_category`: a short, normalized category. In the marked demo, use the
+  defined vocabulary above so every later step receives the same contract. In
+  another project, derive a small vocabulary from the complete population and
+  reuse equivalent category names; do not create a unique category from each
+  sentence. Use `other` when the complaint is real but no stable category fits.
 - `problem_summary`: concise factual description of what the customer reports;
   do not diagnose a cause or add facts absent from the thread.
 - `consequence`: the impact the customer reports. Leave blank when no impact
@@ -88,10 +96,13 @@ Field meanings:
    Search results are already the row population: retain every matching
    message. You may group them by thread internally only to decide whether a
    selective thread read is needed; do not export that internal identifier.
-3. Read all candidate bodies with `gmail_batch_read_email` in connector-sized
-   chunks (up to 100 IDs per call). This is the normal path, not a fallback.
+3. Read all candidate bodies with `gmail_batch_read_email` in batches of 20.
+   This is the normal path, not a fallback: larger batches can exceed Gmail's
+   per-user concurrency limit. If a batch returns rate-limited items, retry
+   only those failed IDs once in batches of 10; do not reread successful items.
    Preserve the original message/thread identifiers internally and retain the
-   sender email, subject, and timestamp in each output row. Use
+   subject and timestamp in each output row. If the body states a customer
+   reference, preserve it verbatim in the row, including `CUST-??`. Use
    `gmail_read_email_thread` only once for a thread that genuinely has more
    than one matching message, or when the batch body is missing or leaves the
    case boundary unresolved. Never read every unique thread one at a time.
@@ -113,14 +124,14 @@ Field meanings:
    threads inspected, complaint messages written, and excluded messages/threads.
    In the marked demo project, stop before declaring success if the complete paginated search does not yield exactly
    120 messages, if the register does not contain exactly 120 rows, or if any
-   row is missing `sender_email` or `subject`; report the discrepancy instead of silently
+   row is missing `subject`; report the discrepancy instead of silently
    presenting a partial register.
 
 ## Failure and stopping rules
 
 - If Gmail is unavailable, stop and explain that the mailbox connection must
   be restored.
-- If a matching message cannot be read, its sender, subject, or timestamp cannot
+- If a matching message cannot be read, its subject or timestamp cannot
   be preserved, or
   pagination is incomplete, stop before declaring the register complete and
   report the unresolved boundary.

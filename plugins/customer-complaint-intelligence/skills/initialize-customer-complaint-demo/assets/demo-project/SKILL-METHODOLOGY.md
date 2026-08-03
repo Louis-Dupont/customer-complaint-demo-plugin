@@ -30,7 +30,7 @@ Each skill was treated as a concise responsibility contract. It states:
 
 The frontmatter description carries both positive and negative triggers because it decides when Codex loads the skill. The body concentrates on non-obvious rules rather than explaining things Codex can already reason through.
 
-The extraction handoff preserves only Gmail facts: sender email, subject, timestamp, and complaint fields, one row per matching email. The analysis step is the first place that reads the customer table and joins `sender_email` to `contact_email`, deriving `customer_id` and customer context. Later Gmail steps re-find messages from that observable tuple; connector message/thread IDs stay internal to the Gmail step. The contracts keep messages, threads, and customers distinct; collapsing message rows would have changed the analysis.
+The extraction handoff preserves one row per matching email: its subject, timestamp, body-stated customer reference, and complaint fields. It does not use the customer table. Analysis is the first place that joins `customer_reference` to `customers.customer_id`, deriving customer context while retaining blank, ambiguous, and unmatched references. Later Gmail steps use the observable subject, timestamp, and reference; connector message/thread IDs stay internal to Gmail. The contracts keep messages, threads, and customers distinct; collapsing message rows would have changed the analysis.
 
 ## Where determinism was used
 
@@ -52,7 +52,7 @@ Validation happened at three levels:
 2. A fresh GitHub installation confirmed that the published plugin was the artifact being tested.
 3. The skills were exercised in sequence against the live synthetic mailbox and local customer table, including visualization, evidence retrieval, Gmail labeling, held-out reuse, and cleanup.
 
-The live rehearsal exposed details that static review did not: Gmail search returns messages while the analysis is case-based; label operations require message IDs even when the decision is expressed over threads; visualization needs a bounded, explicit handoff; and output paths must remain stable across separate Codex turns.
+The live rehearsal exposed details that static review did not: Gmail search and the register are message-based; body reads stay fast and reliable in modest batches; label operations must preserve the exact approved message set; visualization needs a bounded handoff; and output paths must remain stable across separate Codex turns.
 
 ## What we learned
 

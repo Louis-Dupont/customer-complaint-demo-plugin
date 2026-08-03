@@ -6,15 +6,15 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import re
 from collections import defaultdict
 from datetime import datetime
-from email.utils import parseaddr
 from pathlib import Path
 
 
 COMPLAINT_FIELDS = [
-    "sender_email",
     "subject",
+    "customer_reference",
     "received_at",
     "problem_category",
     "problem_summary",
@@ -22,6 +22,8 @@ COMPLAINT_FIELDS = [
     "severity",
 ]
 SEVERITIES = {"low", "medium", "high", "urgent", "unknown"}
+CUSTOMER_REFERENCE = re.compile(r"CUST-(?:\d{3}|\?{2})")
+KNOWN_CUSTOMER_REFERENCE = re.compile(r"CUST-\d{3}")
 
 
 def parse_args() -> argparse.Namespace:
@@ -84,45 +86,46 @@ def main() -> None:
         raise SystemExit("complaints CSV has no rows")
     if list(complaints[0]) != COMPLAINT_FIELDS:
         raise SystemExit(f"complaints header must be exactly {COMPLAINT_FIELDS}")
-    if not customers or not {"customer_id", "contact_email"} <= set(customers[0]):
-        raise SystemExit("customers CSV must contain customer_id and contact_email")
+    if not customers or "customer_id" not in customers[0]:
+        raise SystemExit("customers CSV must contain customer_id")
     customer_map: dict[str, dict[str, str]] = {}
     customer_ids: set[str] = set()
     for row in customers:
         customer_id = row["customer_id"].strip()
-        contact_email = row["contact_email"].strip().lower()
         if not customer_id:
             raise SystemExit("customers CSV contains a blank customer_id")
-        if not contact_email or parseaddr(contact_email)[1] != contact_email or "@" not in contact_email:
-            raise SystemExit(f"customers CSV contains an invalid contact_email for {customer_id}")
         if customer_id in customer_ids:
             raise SystemExit(f"duplicate customer_id: {customer_id}")
-        if contact_email in customer_map:
-            raise SystemExit(f"duplicate contact_email: {contact_email}")
         customer_ids.add(customer_id)
-        customer_map[contact_email] = row
+        customer_map[customer_id] = row
 
     joined: list[dict[str, object]] = []
     for row in complaints:
-        sender_email = row["sender_email"].strip().lower()
         subject = row["subject"].strip()
-        if not sender_email:
-            raise SystemExit("complaints CSV contains a row without sender_email")
         if not subject:
             raise SystemExit("complaints CSV contains a row without subject")
+        customer_reference = row["customer_reference"].strip().upper()
+        if customer_reference and not CUSTOMER_REFERENCE.fullmatch(customer_reference):
+            raise SystemExit(f"invalid customer_reference for {subject!r}")
         try:
             datetime.fromisoformat(row["received_at"].strip().replace("Z", "+00:00"))
         except ValueError as exc:
-            raise SystemExit(f"invalid complaint row from {sender_email!r} / {subject!r}: {exc}") from exc
+            raise SystemExit(f"invalid complaint row {subject!r}: {exc}") from exc
         if row["severity"].strip().lower() not in SEVERITIES:
-            raise SystemExit(f"invalid severity for {sender_email!r} / {subject!r}")
+            raise SystemExit(f"invalid severity for {subject!r}")
         if not row["problem_category"].strip() or not row["problem_summary"].strip():
-            raise SystemExit(f"complaint row {sender_email!r} / {subject!r} needs category and summary")
-        customer = customer_map.get(sender_email)
+            raise SystemExit(f"complaint row {subject!r} needs category and summary")
+        customer = customer_map.get(customer_reference) if KNOWN_CUSTOMER_REFERENCE.fullmatch(customer_reference) else None
         output: dict[str, object] = dict(row)
         output["month"] = month(row["received_at"].strip())
         output["customer_match_status"] = (
-            "matched" if customer else "missing_sender_email" if not sender_email else "unknown_sender_email"
+            "matched"
+            if customer
+            else "missing_customer_reference"
+            if not customer_reference
+            else "ambiguous_customer_reference"
+            if customer_reference == "CUST-??"
+            else "unknown_customer_reference"
         )
         output["customer_id"] = customer["customer_id"] if customer else ""
         if customer:
@@ -158,10 +161,6 @@ def main() -> None:
 
     matched = sum(1 for row in joined if row["customer_match_status"] == "matched")
     unmatched = len(joined) - matched
-    if unmatched > max(5, len(joined) // 4):
-        raise SystemExit(
-            f"too many complaint messages lack a customer match: {unmatched}/{len(joined)}; resolve the join before analysis"
-        )
     metadata = {
         "complaint_message_count": len(joined),
         "customer_population_count": len(customers),

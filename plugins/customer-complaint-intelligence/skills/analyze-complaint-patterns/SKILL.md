@@ -16,8 +16,8 @@ Require:
 
 - A validated `workspace/complaints.csv` produced by
   `extract-gmail-complaints` (or an equivalent CSV with the exact contract).
-- A local `customers.csv` with one row per customer and a stable
-  `contact_email` join field.
+- A local `customers.csv` with one row per customer and a stable `customer_id`
+  field.
 - A working project directory in which `workspace/analysis/` can be created.
 
 When the current working project contains `.customer-complaint-demo-project.json`
@@ -32,7 +32,7 @@ only to the marked demo project. In a normal client project, ask for any
 missing path or period boundary instead of guessing.
 
 If either input is missing, malformed, duplicated, or has substantial unmatched
-sender emails, report that before interpreting the results.
+customer references, report that before interpreting the results.
 
 ## Procedure
 
@@ -44,9 +44,11 @@ sender emails, report that before interpreting the results.
    `python3 scripts/prepare-analysis.py <complaints.csv> <customers.csv> <output_dir>`
    (for the demo: `python3 scripts/prepare-analysis.py
    <demo>/workspace/complaints.csv <demo>/data/customers.csv
-   <demo>/workspace/analysis`). This is the first step that joins the
-   Gmail-derived `sender_email` to the local customer's `contact_email`.
-   It preserves unmatched cases and emits reproducible summary tables.
+   <demo>/workspace/analysis`). This is the first step that reads the customer
+   table and joins the raw `customer_reference` from each message to
+   `customers.customer_id`. It preserves blank, ambiguous, and unmatched
+   references rather than forcing a customer match, and emits reproducible
+   summary tables.
 3. Inspect the resulting tables before writing findings. Keep raw email count,
    complaint-case count, and unique-customer count distinct. Preserve repeat
    contacts rather than letting them silently become distinct affected
@@ -75,8 +77,8 @@ sender emails, report that before interpreting the results.
 The skill must leave these artifacts in `workspace/analysis/`:
 
 - `analysis-data.csv`: one row per complaint message, with the original
-  `sender_email`, `subject`, and timestamp plus the derived `customer_id`,
-  joined customer fields, and a visible `customer_match_status`.
+  `subject`, raw `customer_reference`, and timestamp plus the derived
+  `customer_id`, joined customer fields, and a visible `customer_match_status`.
 - `summary-by-category.csv`.
 - `summary-by-venue.csv`.
 - `summary-by-route.csv`.
@@ -93,10 +95,10 @@ count, and high/urgent case count visible.
   the analysis output.
 
 The generated tables are the handoff for `investigate-complaint-evidence`.
-Keep the exact sender, subject, timestamp, and complaint fields plus the
-derived `customer_id`. A later Gmail step can re-find a message using that
-observable tuple without exposing connector identifiers or pretending there is
-a stable URL field.
+Keep the exact subject, timestamp, raw customer reference, and complaint fields
+plus the derived `customer_id`. A later Gmail step can use those observable
+values to re-find a message; connector identifiers and source URLs are not
+part of the CSV handoff.
 
 ## Boundaries
 

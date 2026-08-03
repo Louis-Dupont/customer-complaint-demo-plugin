@@ -44,7 +44,7 @@ project files.
 
 ## Skills
 
-- `extract-gmail-complaints`: turn complaint threads into a source-linked CSV.
+- `extract-gmail-complaints`: turn complaint emails into a structured CSV.
 - `analyze-complaint-patterns`: join the register with customer data and build analysis artifacts.
 - `investigate-complaint-evidence`: inspect one finding through supporting and contradictory source emails.
 - `apply-complaint-labels`: preview and apply an explicitly approved Gmail-labeling decision.

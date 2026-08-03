@@ -1,6 +1,6 @@
 # Customer Complaint Demo
 
-Northstar Linen Services has 120 customer complaints in Gmail. Reading them one by one would take hours—and still would not reveal which problems deserve attention.
+Northstar Linen Services has a crowded customer support inbox. Reading it one message at a time would take hours—and still would not reveal which problems deserve attention.
 
 This demo shows how a person can use Codex to turn that inbox into business understanding, inspect the evidence, and act on a decision:
 
@@ -8,7 +8,7 @@ This demo shows how a person can use Codex to turn that inbox into business unde
 
 ## The skills
 
-- **Extract Gmail complaints** — turns the selected emails into a structured CSV with sender, subject, and complaint details.
+- **Extract Gmail complaints** — turns the selected emails into a structured CSV with a customer reference, subject, and complaint details.
 - **Analyze complaint patterns** — combines complaints with customer data and creates a deep interactive visualization.
 - **Investigate complaint evidence** — traces a selected finding back to supporting emails and counterexamples.
 - **Apply complaint labels** — previews and applies a human-approved handling decision in Gmail.

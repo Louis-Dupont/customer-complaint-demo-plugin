@@ -1,6 +1,6 @@
 ---
 name: apply-complaint-labels
-description: Apply an explicitly approved complaint-handling decision to Gmail by previewing the exact matching threads, creating or reusing the requested labels, and recording the result. In the Customer Complaint Demo, a bare invocation prepares the defined demo decision for human approval; elsewhere, require the human's rule and target boundary. Do not use to discover patterns, invent the business decision, or label messages without approval.
+description: Apply an explicitly approved complaint-handling decision to Gmail by previewing the exact matching messages, creating or reusing the requested labels, and recording the result. In the Customer Complaint Demo, a bare invocation prepares the defined demo decision for human approval; elsewhere, require the human's rule and target boundary. Do not use to discover patterns, invent the business decision, or label messages without approval.
 ---
 
 # Apply Complaint Labels
@@ -11,7 +11,7 @@ This skill exists to turn a human-approved complaint-handling decision into a co
 
 Require:
 
-- A clear human decision describing which messages or threads should receive which label.
+- A clear human decision describing which messages should receive which label.
 - The analysis/evidence artifact that identifies the matching Gmail sources and
   the derived customer context.
 - An active Gmail connection with permission to create and apply labels.
@@ -22,14 +22,14 @@ containing `.customer-complaint-demo-project.json` with
 decision for the preview:
 
 - match cases whose customer is a hotel on the East route and whose complaint
-  category is `short delivery`;
+  category is `short_delivery`;
 - add `Demo/Service Recovery` and `Demo/Logistics Investigation`.
 
 Use `workspace/analysis/analysis-data.csv` together with the current
 `workspace/complaints.csv` and, when present,
 `workspace/evidence/short-delivery-east-route.md` to resolve exact Gmail
-messages by sender, subject, and timestamp. The analysis table is where
-customer venue and route are joined.
+messages by subject, timestamp, and customer reference when available. The
+analysis table is where customer venue and route are joined.
 The demo default is a fictional, pre-agreed presentation rule—not an automatic
 approval. Always show the complete preview and wait for the human to approve
 before changing Gmail. If the human supplies another rule or labels, honor it.
@@ -45,17 +45,17 @@ above is the only pre-agreed target rule.
 1. Resolve and restate the proposed labels, matching rule, and target count.
    In the marked demo project, use the demo proposal above when the human did
    not provide one.
-2. Resolve the exact Gmail messages from the sender/subject/timestamp tuples in
-   the current analysis/evidence artifacts. These observable fields are the
-   human-facing locator; any Gmail IDs needed by the connector are internal
-   runtime values.
-3. Expand each approved thread with `gmail_read_email_thread` and collect
-   every message ID in that thread. The label tool operates on message IDs, so
-   keep the connector IDs only in the operational preview and receipt.
-4. Show a preview containing the labels, every target thread, its expanded
-   message IDs, and links where available.
+2. Resolve the exact Gmail messages from the subject/timestamp/customer-reference
+   values in the current analysis/evidence artifacts. These observable values
+   are the human-facing locator; any Gmail IDs needed by the connector are
+   internal runtime values.
+3. Keep exactly the message IDs resolved from the approved analysis rows. Do
+   not expand whole threads: another message in the conversation may be outside
+   the approved population or already in Trash.
+4. Show a preview containing the labels, every target message, its resolved
+   message ID, and a Gmail link when available.
 5. Ask the human to approve the preview.
-6. After approval, call Gmail's `gmail_apply_labels_to_emails` with the exact expanded
+6. After approval, call Gmail's `gmail_apply_labels_to_emails` with the exact resolved
    message IDs, the approved label names as arrays, and
    `create_missing_labels: true`.
 7. Write a compact operation receipt to `workspace/actions/` containing the
@@ -71,10 +71,9 @@ Write one JSON receipt under `workspace/actions/` containing:
 - `decision`: the human-approved matching rule.
 - `label_names`: the exact labels requested.
 - `approved`: whether the human approved the preview.
-- `message_locators`: sender/subject/timestamp values for the approved rows.
-- `thread_ids`: internal Gmail thread IDs used by the connector, if needed for
-  the operational receipt; do not copy them into `complaints.csv`.
-- `message_ids`: the expanded Gmail message IDs sent to the label tool.
+- `message_locators`: subject, timestamp, and customer-reference values used
+  for the approved rows.
+- `message_ids`: the resolved Gmail message IDs sent to the label tool.
 - `applied_message_ids`: the IDs reported as changed by Gmail.
 - `unapplied_message_ids`: any IDs that could not be changed and why.
 - `created_label_names`: labels created during this operation, if the connector reports that information.

@@ -4,15 +4,15 @@
 from __future__ import annotations
 
 import csv
+import re
 import sys
 from datetime import date, datetime
-from email.utils import parseaddr
 from pathlib import Path
 
 
 FIELDS = [
-    "sender_email",
     "subject",
+    "customer_reference",
     "received_at",
     "problem_category",
     "problem_summary",
@@ -20,6 +20,7 @@ FIELDS = [
     "severity",
 ]
 SEVERITIES = {"low", "medium", "high", "urgent", "unknown"}
+CUSTOMER_REFERENCE = re.compile(r"CUST-(?:\d{3}|\?{2})")
 
 
 def fail(message: str) -> None:
@@ -50,18 +51,16 @@ def validate(path: Path) -> int:
             count += 1
             if None in row or set(row) != set(FIELDS):
                 fail(f"row {row_number}: row shape does not match the exact header")
-            sender_email = row["sender_email"].strip()
             subject = row["subject"].strip()
+            customer_reference = row["customer_reference"].strip().upper()
             category = row["problem_category"].strip()
             summary = row["problem_summary"].strip()
             severity = row["severity"].strip().lower()
 
-            if sender_email:
-                parsed_sender = parseaddr(sender_email)[1]
-                if parsed_sender != sender_email or "@" not in sender_email:
-                    fail(f"row {row_number}: sender_email must be a normalized email address")
             if not subject:
                 fail(f"row {row_number}: subject is required")
+            if customer_reference and not CUSTOMER_REFERENCE.fullmatch(customer_reference):
+                fail(f"row {row_number}: customer_reference must be blank, CUST-###, or CUST-??")
             if not category:
                 fail(f"row {row_number}: problem_category is required")
             if not summary:

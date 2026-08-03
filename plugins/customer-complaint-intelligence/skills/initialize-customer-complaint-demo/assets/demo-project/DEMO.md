@@ -64,7 +64,7 @@ Invoke the extraction skill. In this marked demo project, a bare skill
 invocation already means the prepared demo scope and
 `workspace/complaints.csv`; you can also use this explicit prompt:
 
-> Search Gmail for `label:"Demo/Northstar Complaint Demo" -in:trash`, then turn those Northstar customer complaint emails into a structured CSV at `workspace/complaints.csv`. Keep one row per matching email, preserve the sender, subject, and timestamp, and leave missing fields blank.
+> Search Gmail for `label:"Demo/Northstar Complaint Demo" -in:trash`, then turn those Northstar customer complaint emails into a structured CSV at `workspace/complaints.csv`. Keep one row per matching email, preserve the subject and timestamp, copy any customer reference exactly as written in the message, and leave missing fields blank.
 
 Show `workspace/complaints.csv` and one or two source messages. Do not spend the
 whole demo reviewing the taxonomy.
@@ -77,7 +77,7 @@ explicit prompt:
 
 > Combine `workspace/complaints.csv` with `data/customers.csv`. Help me understand what deserves attention, and create an interactive visualization.
 
-This is the first step that joins the extracted sender email to the local
+This is the first step that joins the extracted customer reference to the local
 customer table; extraction itself does not consult that table.
 
 Start with the obvious volume view, then ask:
@@ -102,13 +102,13 @@ pretend to prove a cause.
 
 State the human decision:
 
-> For the current Northstar register, label every case where the customer is a hotel on the East route and the complaint category is short delivery. Apply both `Demo/Service Recovery` and `Demo/Logistics Investigation`. Leave ordinary late-delivery complaints in routine support.
+> For the current Northstar register, label every case where the customer is a hotel on the East route and the complaint category is `short_delivery`. Apply both `Demo/Service Recovery` and `Demo/Logistics Investigation`. Leave ordinary late-delivery complaints in routine support.
 
 Then invoke the label skill. A bare invocation prepares the demo's proposed
 labels and exact target rule; it still stops for your approval before changing
 Gmail. You can also use this explicit prompt:
 
-> Preview the Gmail labels `Demo/Service Recovery` and `Demo/Logistics Investigation` and the matching threads for that decision.
+> Preview the Gmail labels `Demo/Service Recovery` and `Demo/Logistics Investigation` and the matching messages for that decision.
 
 The deterministic fixture contains 23 expected matches for this rule. Treat a
 different count as a prompt to inspect the extracted register before approving.
@@ -127,8 +127,8 @@ Then ask:
 
 > Search only the held-out Northstar message (the one with the held-out subject or fixture label) and extract it to `workspace/complaints-heldout.csv`. Process it using the understanding we just developed and show me how it should be handled.
 
-Use the label skill with the held-out sender, subject, and timestamp after the human approves the
-same two labels. This demonstrates reuse without rerunning the original
+Use the label skill with the held-out customer reference, subject, and timestamp
+after the human approves the same two labels. This demonstrates reuse without rerunning the original
 120-message analysis.
 
 The human still triggers the task. Nothing runs automatically in the
