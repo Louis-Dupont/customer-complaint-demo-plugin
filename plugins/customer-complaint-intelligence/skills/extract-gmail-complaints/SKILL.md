@@ -106,11 +106,13 @@ Field meanings:
    returned page as one batch; never manually split or re-transcribe a larger
    result page, and never repeat the first page as a substitute for the next
    token. Track unique message IDs internally so a repeated result cannot
-   become a duplicate row. Search results are already the row population:
+   become a duplicate row. If a token resolves to an empty page, treat the
+   search as complete and do not call the batch reader with an empty ID list.
+   Search results are already the row population:
    retain every matching message. You may group them by thread internally only
    to decide whether a selective thread read is needed; do not export that
    internal identifier.
-3. Read each 20-ID result page with `gmail_batch_read_email`. This is the
+3. Read each non-empty result page with `gmail_batch_read_email`. This is the
    normal path, not a fallback: larger batches can exceed Gmail's per-user
    concurrency limit. If a batch returns rate-limited items, retry only those
    failed IDs once in batches of 10; do not reread successful items. In the
