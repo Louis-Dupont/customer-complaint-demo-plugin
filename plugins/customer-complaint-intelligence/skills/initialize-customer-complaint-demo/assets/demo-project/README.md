@@ -12,7 +12,7 @@ This demo shows how a person can use Codex to turn that inbox into business unde
 - **Analyze complaint patterns** — combines complaints with customer data and creates a deep interactive visualization.
 - **Investigate complaint evidence** — traces a selected finding back to supporting emails and counterexamples.
 - **Apply complaint labels** — previews and applies a human-approved handling decision in Gmail.
-- **Initialize the demo** — creates the isolated demo environment; it is setup, not part of the business workflow.
+- **Initialize the demo** — creates the local demo project; it is setup, not part of the business workflow.
 
 The human triggers every step, asks the questions, inspects the evidence, and makes the decision. Codex does the heavy lifting across the full dataset.
 

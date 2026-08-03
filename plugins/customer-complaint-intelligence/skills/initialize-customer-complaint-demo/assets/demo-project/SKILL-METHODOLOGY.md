@@ -15,7 +15,7 @@ Instead, we used the natural handoffs in the work as the skill boundaries:
 
 No analytical skill owns the full workflow. The user can invoke one step, inspect its output, ask an ordinary follow-up question, or continue to the next skill. The demo sequence lives in the demo runbook rather than inside the plugin.
 
-The initializer is a fifth skill with a different responsibility: it creates and removes the disposable environment but performs none of the complaint workflow. Keeping setup separate prevents convenience packaging from turning into an end-to-end business skill.
+The initializer is a fifth skill with a different responsibility: it creates and removes the disposable local project but performs none of the complaint workflow. Keeping setup separate prevents convenience packaging from turning into an end-to-end business skill.
 
 ## How each contract was written
 
@@ -62,4 +62,4 @@ The live rehearsal exposed details that static review did not: Gmail search retu
 - Human authority belongs at the consequential transition. Codex can prepare evidence and the exact target set; the person chooses and approves the operational change.
 - Generic plugin contracts and demo-specific expectations must remain separate. The skill never encodes “23 East-route hotel cases”; the fixture and runbook do.
 - Real forward use is part of skill design. Several important contract refinements appeared only when one skill's actual output became the next skill's input.
-- The four workflow skills form a system through explicit artifacts, not through an orchestrator skill. That makes every step independently useful and keeps ordinary conversation available between them; the fifth skill only establishes the environment in which they run.
+- The four workflow skills form a system through explicit artifacts, not through an orchestrator skill. That makes every step independently useful and keeps ordinary conversation available between them; the fifth skill only establishes the project in which they run.

@@ -1,9 +1,9 @@
 # Customer Complaint Intelligence
 
 This repository is the client-deliverable Codex plugin. It contains four
-reusable complaint-workflow skills and an explicit initializer for an isolated
-fictional demo capsule. The initializer carries the demo template as an asset;
-the generated project and its Codex runtime remain separate from this plugin.
+reusable complaint-workflow skills and an initializer for a fictional local
+demo project. The initializer carries the template as an asset; the generated
+project remains separate from the plugin installation.
 
 ## Install in Codex
 
@@ -18,16 +18,20 @@ coworker can run these commands without a separate service or credential.
 
 Start a new Codex task after installation.
 
-## Initialize the demo capsule
+## Initialize the demo project
 
 From a fresh Codex environment, invoke
 `$customer-complaint-intelligence:initialize-customer-complaint-demo`.
 It creates `Customer Complaint Demo` and a dedicated
-`~/.codex-products/customer-complaint-demo`, installs the complaint plugin,
-Gmail, and `@visualize` into that home, then opens a short welcome task linked
-to the demo README. Codex and Gmail surface their native connection flows only
-if needed; Gmail is first requested during the demo. The initializer does not
-send or recreate the synthetic Gmail messages.
+local project, ensures Gmail and `@visualize` are available in the current
+Codex environment, then opens a short welcome task linked to the demo README.
+If Gmail is already connected, that connection is reused; otherwise Gmail
+surfaces its native connection flow on first use. The initializer does not send
+or recreate the synthetic Gmail messages.
+
+Plugins and connector authentication belong to the user's Codex environment,
+not exclusively to this project. Removing the demo deletes only its local
+project files.
 
 ## Requirements
 
@@ -44,7 +48,7 @@ send or recreate the synthetic Gmail messages.
 - `analyze-complaint-patterns`: join the register with customer data and build analysis artifacts.
 - `investigate-complaint-evidence`: inspect one finding through supporting and contradictory source emails.
 - `apply-complaint-labels`: preview and apply an explicitly approved Gmail-labeling decision.
-- `initialize-customer-complaint-demo`: create or remove the isolated demo capsule.
+- `initialize-customer-complaint-demo`: create or remove the local demo project.
 
 The human invokes each skill separately. No skill runs the complete workflow or
 chooses the business decision silently.

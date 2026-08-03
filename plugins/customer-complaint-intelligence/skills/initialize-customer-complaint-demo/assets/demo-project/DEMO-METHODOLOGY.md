@@ -24,13 +24,13 @@ We then designed the evidence backwards from the moment the audience should disc
 
 The emails were generated from an explicit distribution, then varied in tone, phrasing, detail, severity, and consequence. The customer table was created as a separate local source so that the strongest insight could not be obtained from inbox text alone. This made the join and the deeper analysis materially useful.
 
-The reusable plugin and the generated fictional client environment remain separate at runtime:
+The reusable plugin and the generated fictional client project remain separate artifacts:
 
 - The installed plugin provides reusable skills plus an initializer.
 - The initializer carries a frozen copy of this fictional template so a fresh installation can create the demo in one step.
-- The created `Customer Complaint Demo` project contains the synthetic company, local mailbox fixtures, customer data, runbook, and reset tools; its dedicated `CODEX_HOME` contains its own plugins and credentials.
+- The created `Customer Complaint Demo` project contains the synthetic company, local mailbox fixtures, customer data, runbook, and reset tools.
 
-Bundling the template changed the packaging boundary, not the operating boundary: skills never read fixture data from inside their own installation, and the working project is still a distinct client-like environment that can be removed as one capsule.
+The project deliberately uses the client's existing Codex environment. Installed plugins and connector authentication are shared at that environment level; only files, project context, tasks, and generated artifacts are project-specific.
 
 ## How the work was organized
 
@@ -48,6 +48,6 @@ The final authority remained the end-to-end rehearsal. Offline checks establishe
 - The live service boundary should be the simplest one that supports the experience. The existing Gmail plugin was sufficient; a dedicated Google Cloud project and custom OAuth path added setup work without improving the actual demo, so that path was removed from the normal flow.
 - Live connectors change details. Gmail normalized synthetic sender and date headers, so customer identity was kept in the body and the analysis avoided depending on timestamps. Sending to a fictional `.example` address created bounce notices; sending the held-out fixture to Bobby's own address avoided that noise.
 - A reliable demo includes its starting state and reset state. The handoff is only complete when the next presenter can begin with 120 scoped messages, no action labels applied, the held-out message out of the active population, and an empty local workspace.
-- A self-contained initializer is useful only when it creates a genuinely separate environment. The tested flow copies the project, creates a new `CODEX_HOME`, installs the required plugins there, refuses existing targets, and removes the generated project and runtime together.
-- Marketplace configuration may store absolute source paths. Sources that must survive initialization need to be placed at their final location before plugin installation; moving the runtime afterward breaks the new environment.
-- Email population is intentionally outside initialization. The local fixture makes the project reproducible, while authentication and the dedicated Bobby inbox remain visible setup boundaries for the presenter.
+- A local Codex project is not a plugin or credential boundary. A separate `CODEX_HOME` can isolate CLI or app-server state, but Desktop tasks do not automatically adopt it merely because a project launcher points there.
+- The simplest reliable client delivery is therefore a project inside the client's own Codex environment. Missing plugins are installed there, an existing Gmail connection is reused, and a missing connection is handled by Gmail's native flow on first use.
+- Email population remains outside initialization. The local fixture makes the project reproducible, while the prepared Bobby inbox remains demo-only state.
