@@ -47,9 +47,17 @@ Start with [README.md](ABSOLUTE_README_PATH).
 ```
 
 Open that new task for the human. If Codex presents its native authentication
-flow while the task is created, let the human complete it and then continue;
-do not replace it with custom authentication. Stop only when the welcome task
-is open or a native flow requires the human's attention.
+flow while the task is created, let the human complete it and then retry. If
+task creation returns an unauthorized response instead of opening that flow,
+open the generated project with `codex-project` so Desktop can present its
+native sign-in; ask the human to complete it, then retry the welcome task. Do
+not run a preflight login check, copy credentials, or build custom
+authentication. The generated project is intentionally not a Git repository;
+when the task is created through the CLI, allow that project with Codex's
+supported non-Git option.
+
+Stop only when the welcome task is open or the native Desktop sign-in requires
+the human's attention.
 
 The `.eml` files in the bundled project are local scaffolding only. Do not send
 them, recreate the Gmail messages, or modify the live mailbox as part of
