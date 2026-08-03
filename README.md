@@ -20,7 +20,9 @@ Start a new Codex task after installation.
 ## Requirements
 
 - Codex.
-- The Gmail plugin connected to the intended Gmail account.
+- The official Gmail plugin connected to the intended Gmail account. If it is
+  not installed yet, run `codex plugin add gmail@openai-curated`, then start a
+  fresh Codex task and complete the Gmail connection.
 - The bundled `@visualize` capability for interactive analysis.
 - A local customer CSV for the analysis step.
 
