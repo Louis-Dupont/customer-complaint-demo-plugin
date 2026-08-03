@@ -20,12 +20,14 @@ Start a new Codex task after installation.
 
 ## Initialize the demo capsule
 
-From a fresh Codex environment, invoke `$initialize-customer-complaint-demo`.
+From a fresh Codex environment, invoke
+`$customer-complaint-intelligence:initialize-customer-complaint-demo`.
 It creates `Customer Complaint Demo` and a dedicated
 `~/.codex-products/customer-complaint-demo`, installs the complaint plugin,
-Gmail, and `@visualize` into that home, and writes a launcher. Authenticate
-Codex and connect Gmail inside the new capsule. The initializer does not send
-or recreate the synthetic Gmail messages.
+Gmail, and `@visualize` into that home, then opens a short welcome task linked
+to the demo README. Codex and Gmail surface their native connection flows only
+if needed; Gmail is first requested during the demo. The initializer does not
+send or recreate the synthetic Gmail messages.
 
 ## Requirements
 

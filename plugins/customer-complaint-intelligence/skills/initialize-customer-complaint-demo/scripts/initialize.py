@@ -221,7 +221,7 @@ def main() -> int:
     print(f"Created project: {project_dir}")
     print(f"Created isolated CODEX_HOME: {runtime_dir}")
     print(f"Launch with: {launcher_path}")
-    print("Connect Codex and Gmail inside the new capsule before running the demo.")
+    print("Create the welcome task next; let Codex and Gmail surface native connection flows when needed.")
     if not args.no_open:
         run_codex(["app", str(project_dir)], runtime_dir)
     return 0

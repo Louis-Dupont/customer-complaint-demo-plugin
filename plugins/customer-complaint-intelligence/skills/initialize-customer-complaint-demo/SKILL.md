@@ -1,6 +1,6 @@
 ---
 name: initialize-customer-complaint-demo
-description: "Create the disposable Customer Complaint Demo project from the bundled template, give it an isolated CODEX_HOME, install its plugin dependencies there, and open it. Use when a user asks to set up, bootstrap, or remove this demo environment. Do not seed or recreate the Gmail fixture messages."
+description: "Create the disposable Customer Complaint Demo project from the bundled template, give it an isolated CODEX_HOME, install its plugin dependencies, and open a welcome task. Use when a user asks to set up, bootstrap, or remove this demo environment. Do not seed or recreate the Gmail fixture messages."
 ---
 
 # Initialize Customer Complaint Demo
@@ -20,15 +20,36 @@ python3 scripts/initialize.py
 It creates `Customer Complaint Demo` under `~/Projects` and its isolated
 runtime under `~/.codex-products/customer-complaint-demo`. It copies the
 bundled fictional project, installs the complaint plugin, Gmail, and
-`@visualize` into the new home, writes a launcher, and opens the project.
+`@visualize` into the new home, and writes a launcher.
 
-If either target already exists, stop without overwriting it. The command
-stops on the first failed setup operation; do not add a second inspection pass
-or try to repair a partial capsule silently.
+If the command reports that the project already exists, inspect the project
+and runtime markers. Continue to the welcome task only when both markers
+identify the same valid Customer Complaint Demo capsule. Never overwrite or
+silently repair an existing project or partial capsule.
 
-The new home has its own Codex login and connector state. Ask the human to
-authenticate and connect Gmail inside that new environment. Never copy tokens
-from the invoking home.
+Do not add a separate authentication ceremony or preflight login check. Let
+Codex surface its native flow if authentication is needed. Gmail connection is
+also deferred until the first Gmail request in the demo; let the Gmail plugin
+surface its normal connection flow at that moment. Never copy credentials from
+the invoking environment.
+
+## Open the welcome task
+
+After initialization, create one persisted Codex task with the generated
+project as its working directory and the generated runtime as `CODEX_HOME`.
+Ask that task to respond with exactly this introduction, using an absolute
+clickable path for the README:
+
+```text
+Welcome to the Customer Complaint Demo. You can explore how Codex helps turn a crowded support inbox into a clearer understanding of what customers are experiencing—and move from insight to action.
+
+Start with [README.md](ABSOLUTE_README_PATH).
+```
+
+Open that new task for the human. If Codex presents its native authentication
+flow while the task is created, let the human complete it and then continue;
+do not replace it with custom authentication. Stop only when the welcome task
+is open or a native flow requires the human's attention.
 
 The `.eml` files in the bundled project are local scaffolding only. Do not send
 them, recreate the Gmail messages, or modify the live mailbox as part of
