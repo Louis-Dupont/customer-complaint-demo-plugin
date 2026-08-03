@@ -12,7 +12,8 @@ This skill exists to turn a human-approved complaint-handling decision into a co
 Require:
 
 - A clear human decision describing which messages or threads should receive which label.
-- A complaint register or investigation artifact that identifies the matching Gmail threads.
+- The analysis/evidence artifact that identifies the matching Gmail sources and
+  the derived customer context.
 - An active Gmail connection with permission to create and apply labels.
 
 In the marked Customer Complaint Demo project (a current working directory
@@ -24,8 +25,10 @@ decision for the preview:
   category is `short delivery`;
 - add `Demo/Service Recovery` and `Demo/Logistics Investigation`.
 
-Use the current `workspace/complaints.csv` and, when present,
-`workspace/evidence/short-delivery-east-route.md` to resolve exact threads.
+Use `workspace/analysis/analysis-data.csv` together with the current
+`workspace/complaints.csv` and, when present,
+`workspace/evidence/short-delivery-east-route.md` to resolve exact Gmail
+sources. The analysis table is where customer venue and route are joined.
 The demo default is a fictional, pre-agreed presentation rule—not an automatic
 approval. Always show the complete preview and wait for the human to approve
 before changing Gmail. If the human supplies another rule or labels, honor it.
@@ -42,7 +45,7 @@ above is the only pre-agreed target rule.
    In the marked demo project, use the demo proposal above when the human did
    not provide one.
 2. Resolve the exact Gmail threads from the `source_url` values in the current
-   register or evidence artifact. The URL is the human-facing trace key; any
+   analysis/evidence artifacts. The URL is the human-facing trace key; any
    Gmail IDs needed by the connector are internal runtime values.
 3. Expand each approved thread with `gmail_read_email_thread` and collect
    every message ID in that thread. The label tool operates on message IDs, not

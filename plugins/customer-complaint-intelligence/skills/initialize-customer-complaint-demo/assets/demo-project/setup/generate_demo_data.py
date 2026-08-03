@@ -60,6 +60,7 @@ def build_customers() -> list[dict[str, object]]:
             {
                 "customer_id": f"CUST-{index:03d}",
                 "customer_name": f"{venue_label} {city} {index:03d}",
+                "contact_email": f"{slug(venue_label + ' ' + city + ' ' + str(index).zfill(3))}@customer.example",
                 "venue_type": venue_type,
                 "city": city,
                 "region": "South" if city in {"Brighton", "Bristol", "Oxford"} else "North",
@@ -205,7 +206,7 @@ def render_email(case: dict[str, object], ordinal: int) -> tuple[str, str, str]:
         "Thank you,",
     ]
     contact_name = str(customer["customer_name"]).replace(" ", " ")
-    email = f"{slug(customer['customer_name'])}@customer.example"
+    email = str(customer["contact_email"])
     venue_context = {
         "hotel": [
             "The housekeeping team is working through the morning room turn.",

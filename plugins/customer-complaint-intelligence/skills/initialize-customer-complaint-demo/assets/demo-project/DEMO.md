@@ -64,7 +64,7 @@ Invoke the extraction skill. In this marked demo project, a bare skill
 invocation already means the prepared demo scope and
 `workspace/complaints.csv`; you can also use this explicit prompt:
 
-> Search Gmail for `label:"Demo/Northstar Complaint Demo" -in:trash`, then turn those Northstar customer complaint emails into a structured CSV at `workspace/complaints.csv`. Keep one row per complaint case, preserve Gmail links, and leave missing fields blank.
+> Search Gmail for `label:"Demo/Northstar Complaint Demo" -in:trash`, then turn those Northstar customer complaint emails into a structured CSV at `workspace/complaints.csv`. Keep one row per matching email, preserve Gmail links, and leave missing fields blank.
 
 Show `workspace/complaints.csv` and one or two source links. Do not spend the
 whole demo reviewing the taxonomy.
@@ -76,6 +76,9 @@ and `workspace/analysis/` automatically in this project; you can also use this
 explicit prompt:
 
 > Combine `workspace/complaints.csv` with `data/customers.csv`. Help me understand what deserves attention, and create an interactive visualization.
+
+This is the first step that joins the extracted sender email to the local
+customer table; extraction itself does not consult that table.
 
 Start with the obvious volume view, then ask:
 

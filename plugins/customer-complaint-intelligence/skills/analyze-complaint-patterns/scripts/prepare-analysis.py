@@ -8,13 +8,14 @@ import csv
 import json
 from collections import defaultdict
 from datetime import datetime
+from email.utils import parseaddr
 from pathlib import Path
 from urllib.parse import urlparse
 
 
 COMPLAINT_FIELDS = [
     "source_url",
-    "customer_id",
+    "sender_email",
     "received_at",
     "problem_category",
     "problem_summary",
@@ -65,12 +66,12 @@ def summarize(rows: list[dict[str, object]], group_field: str) -> list[dict[str,
         summaries.append(
             {
                 group_field: key,
-                "case_count": len(group),
+                "message_count": len(group),
                 "unique_customer_count": len(customer_ids),
-                "unmatched_case_count": sum(
+                "unmatched_message_count": sum(
                     1 for row in group if row.get("customer_match_status") != "matched"
                 ),
-                "high_or_urgent_case_count": urgent,
+                "high_or_urgent_message_count": urgent,
             }
         )
     return summaries
@@ -84,21 +85,28 @@ def main() -> None:
         raise SystemExit("complaints CSV has no rows")
     if list(complaints[0]) != COMPLAINT_FIELDS:
         raise SystemExit(f"complaints header must be exactly {COMPLAINT_FIELDS}")
-    if not customers or "customer_id" not in customers[0]:
-        raise SystemExit("customers CSV must contain customer_id")
+    if not customers or not {"customer_id", "contact_email"} <= set(customers[0]):
+        raise SystemExit("customers CSV must contain customer_id and contact_email")
     customer_map: dict[str, dict[str, str]] = {}
+    customer_ids: set[str] = set()
     for row in customers:
         customer_id = row["customer_id"].strip()
+        contact_email = row["contact_email"].strip().lower()
         if not customer_id:
             raise SystemExit("customers CSV contains a blank customer_id")
-        if customer_id in customer_map:
+        if not contact_email or parseaddr(contact_email)[1] != contact_email or "@" not in contact_email:
+            raise SystemExit(f"customers CSV contains an invalid contact_email for {customer_id}")
+        if customer_id in customer_ids:
             raise SystemExit(f"duplicate customer_id: {customer_id}")
-        customer_map[customer_id] = row
+        if contact_email in customer_map:
+            raise SystemExit(f"duplicate contact_email: {contact_email}")
+        customer_ids.add(customer_id)
+        customer_map[contact_email] = row
 
     joined: list[dict[str, object]] = []
     for row in complaints:
-        customer_id = row["customer_id"].strip()
         source_url = row["source_url"].strip()
+        sender_email = row["sender_email"].strip().lower()
         if not source_url:
             raise SystemExit("complaints CSV contains a row without source_url")
         parsed_url = urlparse(source_url)
@@ -112,20 +120,21 @@ def main() -> None:
             raise SystemExit(f"invalid severity for {source_url!r}")
         if not row["problem_category"].strip() or not row["problem_summary"].strip():
             raise SystemExit(f"complaint row {source_url!r} needs category and summary")
-        customer = customer_map.get(customer_id)
+        customer = customer_map.get(sender_email)
         output: dict[str, object] = dict(row)
         output["month"] = month(row["received_at"].strip())
         output["customer_match_status"] = (
-            "matched" if customer else "missing_customer_id" if not customer_id else "unknown_customer_id"
+            "matched" if customer else "missing_sender_email" if not sender_email else "unknown_sender_email"
         )
+        output["customer_id"] = customer["customer_id"] if customer else ""
         if customer:
             for key, value in customer.items():
-                if key == "customer_id":
+                if key in {"customer_id", "contact_email"}:
                     continue
                 output[f"customer_{key}"] = value
         else:
             for key in customers[0]:
-                if key != "customer_id":
+                if key not in {"customer_id", "contact_email"}:
                     output[f"customer_{key}"] = ""
         joined.append(output)
 
@@ -133,32 +142,33 @@ def main() -> None:
     joined_fields = COMPLAINT_FIELDS + [
         "month",
         "customer_match_status",
-    ] + [f"customer_{key}" for key in customers[0] if key != "customer_id"]
+        "customer_id",
+    ] + [f"customer_{key}" for key in customers[0] if key not in {"customer_id", "contact_email"}]
     write_csv(args.output_dir / "analysis-data.csv", joined, joined_fields)
     write_csv(args.output_dir / "summary-by-category.csv", summarize(joined, "problem_category"), [
-        "problem_category", "case_count", "unique_customer_count", "unmatched_case_count", "high_or_urgent_case_count"
+        "problem_category", "message_count", "unique_customer_count", "unmatched_message_count", "high_or_urgent_message_count"
     ])
     write_csv(args.output_dir / "summary-by-venue.csv", summarize(joined, "customer_venue_type"), [
-        "customer_venue_type", "case_count", "unique_customer_count", "unmatched_case_count", "high_or_urgent_case_count"
+        "customer_venue_type", "message_count", "unique_customer_count", "unmatched_message_count", "high_or_urgent_message_count"
     ])
     write_csv(args.output_dir / "summary-by-route.csv", summarize(joined, "customer_delivery_route"), [
-        "customer_delivery_route", "case_count", "unique_customer_count", "unmatched_case_count", "high_or_urgent_case_count"
+        "customer_delivery_route", "message_count", "unique_customer_count", "unmatched_message_count", "high_or_urgent_message_count"
     ])
     write_csv(args.output_dir / "summary-by-month.csv", summarize(joined, "month"), [
-        "month", "case_count", "unique_customer_count", "unmatched_case_count", "high_or_urgent_case_count"
+        "month", "message_count", "unique_customer_count", "unmatched_message_count", "high_or_urgent_message_count"
     ])
 
     matched = sum(1 for row in joined if row["customer_match_status"] == "matched")
     unmatched = len(joined) - matched
     if unmatched > max(5, len(joined) // 4):
         raise SystemExit(
-            f"too many complaint cases lack a customer match: {unmatched}/{len(joined)}; resolve the join before analysis"
+            f"too many complaint messages lack a customer match: {unmatched}/{len(joined)}; resolve the join before analysis"
         )
     metadata = {
-        "complaint_case_count": len(joined),
+        "complaint_message_count": len(joined),
         "customer_population_count": len(customers),
-        "matched_case_count": matched,
-        "unmatched_case_count": unmatched,
+        "matched_message_count": matched,
+        "unmatched_message_count": unmatched,
         "unique_complaining_customer_count": len(
             {row["customer_id"] for row in joined if row["customer_match_status"] == "matched"}
         ),

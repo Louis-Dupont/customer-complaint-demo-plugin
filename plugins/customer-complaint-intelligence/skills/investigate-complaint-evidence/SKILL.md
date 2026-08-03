@@ -14,11 +14,13 @@ Turn one human-selected finding or question into a source-backed evidence brief.
 Use the actual outputs of the earlier steps:
 
 - `workspace/complaints.csv`, with these semantic fields:
-  `source_url`, `customer_id`, `received_at`, `problem_category`,
+  `source_url`, `sender_email`, `received_at`, `problem_category`,
   `problem_summary`, `consequence`, and `severity`.
+- `workspace/analysis/analysis-data.csv`, where the analysis step has joined
+  each `sender_email` to a derived `customer_id` and customer context.
 - The selected finding or question, supplied in the user's message or selected
   from the analysis output.
-- `workspace/analysis/findings.md` and, when relevant,
+- `workspace/analysis/findings.md` and
   `workspace/analysis/analysis-data.csv` (or the equivalent paths named by the
   analysis step).
 - The connected Gmail mailbox, used to read the source threads referenced by
@@ -52,14 +54,14 @@ If a required field, source identifier, or analysis artifact is missing, say exa
    Use deterministic filtering/counting where possible; do not treat a sentence
    in `findings.md` as sufficient when the underlying rows are available.
 3. Build two sets from the actual artifacts:
-   - **Supporting cases**: rows that meet the finding's stated condition.
-   - **Contradictory or exception cases**: comparable rows that weaken, qualify,
+   - **Supporting messages**: rows that meet the finding's stated condition.
+   - **Contradictory or exception messages**: comparable rows that weaken, qualify,
      or fail the apparent pattern.
-4. Use each source row as one complaint case; use `source_url` as its trace key
+4. Use each source row as one complaint message; use `source_url` as its trace key
    and deduplicate by `source_url` only when counting the same source twice.
-   Count affected customers by `customer_id`. Keep repeat contacts visible
-   when they explain volume or the finding. State which denominator each count
-   uses.
+   Count affected customers by the `customer_id` derived in
+   `analysis-data.csv`. Keep repeat contacts visible when they explain volume
+   or the finding. State which denominator each count uses.
 5. Read the relevant Gmail threads with `gmail_read_email_thread`, resolving
    the source URL to the connector's internal message/thread identifier when
    needed. Read the whole thread when follow-ups, corrections, or later
@@ -82,10 +84,11 @@ The report must contain these sections, in this order:
 2. **Scope and method** — source artifacts, time range, population, metric,
    comparator, and whether counts are messages, cases, or customers.
 3. **Answer** — the narrow conclusion supported by the selected evidence.
-4. **Supporting cases** — a table with `source_url`, `customer_id`, date,
+4. **Supporting messages** — a table with `source_url`, `sender_email`,
+   derived `customer_id`, date,
    `problem_category`, concise evidence from the email, and a clickable
    `source_url` for every material case.
-5. **Contradictory or exception cases** — the same traceable fields for cases
+5. **Contradictory or exception messages** — the same traceable fields for messages
    that qualify or challenge the finding. Write “none found in the inspected
    scope” only after checking that scope.
 6. **What the source emails add** — details that the structured data does not
@@ -114,7 +117,7 @@ not silently turn a descriptive complaint pattern into a confirmed cause.
 
 ## Completion
 
-Finish when the evidence brief exists at the agreed path, every material case
-has a customer identifier when available and a source link, supporting and exception sets
+Finish when the evidence brief exists at the agreed path, every material message
+has a derived customer identifier when matched and a source link, supporting and exception sets
 are explicit, scope and denominators are stated, and the human has received a
 concise answer. Do not continue into labeling or end-to-end orchestration.

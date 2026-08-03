@@ -30,7 +30,7 @@ Each skill was treated as a concise responsibility contract. It states:
 
 The frontmatter description carries both positive and negative triggers because it decides when Codex loads the skill. The body concentrates on non-obvious rules rather than explaining things Codex can already reason through.
 
-The handoff contracts preserve the source URL, customer ID, and business fields. The source URL is enough to return from analysis to Gmail; connector message/thread IDs stay internal to the Gmail step. The contracts also keep messages, threads, complaint cases, and customers distinct; collapsing those units would have changed the analysis.
+The extraction handoff preserves only Gmail facts: the source URL, sender email, and complaint fields, one row per matching email. The analysis step is the first place that reads the customer table and joins `sender_email` to `contact_email`, deriving `customer_id` and customer context. The source URL is enough to return from analysis to Gmail; connector message/thread IDs stay internal to the Gmail step. The contracts keep messages, threads, and customers distinct; collapsing message rows would have changed the analysis.
 
 ## Where determinism was used
 
