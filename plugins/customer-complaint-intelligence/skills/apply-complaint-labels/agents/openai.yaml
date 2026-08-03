@@ -1,7 +1,7 @@
 interface:
   display_name: "Apply complaint labels"
   short_description: "Apply an approved complaint rule to Gmail"
-  default_prompt: "Preview and apply the approved complaint labels to matching Gmail threads."
+  default_prompt: "In the marked Customer Complaint Demo project, prepare the defined demo handling rule and exact Gmail preview for human approval. Do not change Gmail until approval. Outside that project, ask for the decision and target boundary."
 
 policy:
   allow_implicit_invocation: true

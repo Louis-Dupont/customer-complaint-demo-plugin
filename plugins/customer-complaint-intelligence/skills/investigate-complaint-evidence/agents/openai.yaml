@@ -1,7 +1,7 @@
 interface:
   display_name: "Investigate complaint evidence"
   short_description: "Trace a finding to supporting and exception cases"
-  default_prompt: "Investigate this complaint finding and show me the supporting cases, exceptions, and source emails."
+  default_prompt: "In the marked Customer Complaint Demo project, investigate the defined short-delivery East-route finding using the analysis handoff and source emails. Outside that project, ask for the selected finding."
 
 policy:
   allow_implicit_invocation: true

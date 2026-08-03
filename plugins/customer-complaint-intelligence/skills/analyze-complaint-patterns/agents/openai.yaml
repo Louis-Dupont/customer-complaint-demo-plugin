@@ -1,7 +1,7 @@
 interface:
   display_name: "Analyze complaint patterns"
   short_description: "Analyze complaint cases with customer context"
-  default_prompt: "Combine the complaint register with customer data and show me what deserves attention."
+  default_prompt: "In the marked Customer Complaint Demo project, analyze workspace/complaints.csv with data/customers.csv, write the defined analysis handoff, and create the interactive visualization. Outside that project, ask for missing inputs."
 
 policy:
   allow_implicit_invocation: true
