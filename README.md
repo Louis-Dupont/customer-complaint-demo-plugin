@@ -33,3 +33,6 @@ Start a new Codex task after installation.
 
 The human invokes each skill separately. No skill runs the complete workflow or
 chooses the business decision silently.
+
+There is no custom MCP server, hosted JAD service, plugin-specific login, or
+background automation in this repository.
