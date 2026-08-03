@@ -150,13 +150,12 @@ def main() -> int:
     runtime_root.mkdir(parents=True, exist_ok=True)
     staging_id = uuid.uuid4().hex
     staged_project = project_root / f".{SLUG}.project-{staging_id}"
-    staged_runtime = runtime_root / f".{SLUG}.runtime-{staging_id}"
 
     try:
         shutil.copytree(TEMPLATE, staged_project)
-        staged_runtime.mkdir(parents=True)
+        runtime_dir.mkdir(parents=True)
         write_text(
-            staged_runtime / "config.toml",
+            runtime_dir / "config.toml",
             "# Isolated Codex state for Customer Complaint Demo.\n"
             'mcp_oauth_credentials_store = "file"\n',
         )
@@ -182,26 +181,25 @@ def main() -> int:
 
         for marketplace_name, source in official_sources.items():
             if marketplace_name == CURATED_SOURCE_NAME:
-                snapshot = prepare_curated_gmail_snapshot(Path(source), staged_runtime)
-                run_codex(["plugin", "marketplace", "add", str(snapshot)], staged_runtime)
+                snapshot = prepare_curated_gmail_snapshot(Path(source), runtime_dir)
+                run_codex(["plugin", "marketplace", "add", str(snapshot)], runtime_dir)
             else:
-                run_codex(["plugin", "marketplace", "add", source], staged_runtime)
+                run_codex(["plugin", "marketplace", "add", source], runtime_dir)
         run_codex(
             ["plugin", "marketplace", "add", PLUGIN_REPOSITORY, "--ref", args.marketplace_ref],
-            staged_runtime,
+            runtime_dir,
         )
         for plugin_selector in REQUIRED_MARKETPLACES.values():
-            run_codex(["plugin", "add", plugin_selector], staged_runtime)
-        run_codex(["plugin", "add", f"gmail@{CURATED_SNAPSHOT_NAME}"], staged_runtime)
-        run_codex(["plugin", "add", PLUGIN_SELECTOR], staged_runtime)
+            run_codex(["plugin", "add", plugin_selector], runtime_dir)
+        run_codex(["plugin", "add", f"gmail@{CURATED_SNAPSHOT_NAME}"], runtime_dir)
+        run_codex(["plugin", "add", PLUGIN_SELECTOR], runtime_dir)
 
         staged_project.rename(project_dir)
-        staged_runtime.rename(runtime_dir)
     except Exception:
         if staged_project.exists():
             shutil.rmtree(staged_project)
-        if staged_runtime.exists():
-            shutil.rmtree(staged_runtime)
+        if runtime_dir.exists():
+            shutil.rmtree(runtime_dir)
         raise
 
     launcher_path = project_dir / "codex-project"
