@@ -13,7 +13,9 @@ Instead, we used the natural handoffs in the work as the skill boundaries:
 3. `investigate-complaint-evidence`: one human-selected finding to a source-backed brief with supporting cases and exceptions.
 4. `apply-complaint-labels`: one approved handling rule to a previewed Gmail change and operation receipt.
 
-No skill owns the full workflow. The user can invoke one step, inspect its output, ask an ordinary follow-up question, or continue to the next skill. The demo sequence lives in the demo runbook rather than inside the plugin.
+No analytical skill owns the full workflow. The user can invoke one step, inspect its output, ask an ordinary follow-up question, or continue to the next skill. The demo sequence lives in the demo runbook rather than inside the plugin.
+
+The initializer is a fifth skill with a different responsibility: it creates and removes the disposable environment but performs none of the complaint workflow. Keeping setup separate prevents convenience packaging from turning into an end-to-end business skill.
 
 ## How each contract was written
 
@@ -60,4 +62,4 @@ The live rehearsal exposed details that static review did not: Gmail search retu
 - Human authority belongs at the consequential transition. Codex can prepare evidence and the exact target set; the person chooses and approves the operational change.
 - Generic plugin contracts and demo-specific expectations must remain separate. The skill never encodes “23 East-route hotel cases”; the fixture and runbook do.
 - Real forward use is part of skill design. Several important contract refinements appeared only when one skill's actual output became the next skill's input.
-- The four skills form a system through explicit artifacts, not through an orchestrator skill. That makes every step independently useful and keeps ordinary conversation available between them.
+- The four workflow skills form a system through explicit artifacts, not through an orchestrator skill. That makes every step independently useful and keeps ordinary conversation available between them; the fifth skill only establishes the environment in which they run.

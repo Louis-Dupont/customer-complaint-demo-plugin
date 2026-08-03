@@ -12,6 +12,7 @@ from pathlib import Path
 DISPLAY_NAME = "Customer Complaint Demo"
 SLUG = "customer-complaint-demo"
 CAPSULE_MARKER = ".customer-complaint-demo-capsule.json"
+RUNTIME_MARKER = ".customer-complaint-demo-runtime.json"
 
 
 def parse_args() -> argparse.Namespace:
@@ -32,9 +33,24 @@ def main() -> int:
     marker = json.loads(marker_path.read_text(encoding="utf-8"))
     if marker.get("display_name") != DISPLAY_NAME or marker.get("slug") != SLUG:
         raise RuntimeError("capsule marker does not belong to Customer Complaint Demo")
+    recorded_project_dir = Path(marker["project_directory"]).expanduser().resolve()
+    if recorded_project_dir != project_dir:
+        raise RuntimeError("capsule marker points to a different project directory")
     runtime_dir = Path(marker["runtime_directory"]).expanduser().resolve()
     if not runtime_dir.is_dir() or runtime_dir.is_symlink():
         raise RuntimeError(f"expected generated runtime directory: {runtime_dir}")
+    if runtime_dir == project_dir or runtime_dir in project_dir.parents or project_dir in runtime_dir.parents:
+        raise RuntimeError("project and runtime directories must be separate")
+    runtime_marker_path = runtime_dir / RUNTIME_MARKER
+    if not runtime_marker_path.is_file():
+        raise RuntimeError(f"missing runtime marker; refusing to remove: {runtime_marker_path}")
+    runtime_marker = json.loads(runtime_marker_path.read_text(encoding="utf-8"))
+    if runtime_marker.get("display_name") != DISPLAY_NAME or runtime_marker.get("slug") != SLUG:
+        raise RuntimeError("runtime marker does not belong to Customer Complaint Demo")
+    if Path(runtime_marker["project_directory"]).expanduser().resolve() != project_dir:
+        raise RuntimeError("runtime marker points to a different project directory")
+    if Path(runtime_marker["runtime_directory"]).expanduser().resolve() != runtime_dir:
+        raise RuntimeError("runtime marker points to a different runtime directory")
     if not args.yes:
         print(f"Would remove:\n- {project_dir}\n- {runtime_dir}\nPass --yes to confirm.")
         return 0

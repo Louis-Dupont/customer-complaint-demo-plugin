@@ -27,6 +27,7 @@ CURATED_SNAPSHOT_NAME = "jad-openai-curated-gmail"
 CURATED_SOURCE_NAME = "openai-curated"
 TEMPLATE = Path(__file__).resolve().parents[1] / "assets" / "demo-project"
 CAPSULE_MARKER = ".customer-complaint-demo-capsule.json"
+RUNTIME_MARKER = ".customer-complaint-demo-runtime.json"
 
 
 def run_codex(args: list[str], codex_home: Path, *, capture: bool = False) -> str:
@@ -173,6 +174,20 @@ def main() -> int:
                     "plugin_ref": args.marketplace_ref,
                     "plugin_selector": PLUGIN_SELECTOR,
                     "email_fixture_policy": "local scaffolding only; not sent by initializer",
+                },
+                indent=2,
+            )
+            + "\n",
+        )
+        write_text(
+            runtime_dir / RUNTIME_MARKER,
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "display_name": DISPLAY_NAME,
+                    "slug": SLUG,
+                    "project_directory": str(project_dir),
+                    "runtime_directory": str(runtime_dir),
                 },
                 indent=2,
             )
