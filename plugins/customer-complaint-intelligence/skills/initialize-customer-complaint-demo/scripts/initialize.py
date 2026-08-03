@@ -22,8 +22,9 @@ PLUGIN_SELECTOR = "customer-complaint-intelligence@jad-customer-complaint-intell
 DEFAULT_PLUGIN_REF = "main"
 REQUIRED_MARKETPLACES = {
     "openai-bundled": "visualize@openai-bundled",
-    "openai-curated": "gmail@openai-curated",
 }
+CURATED_SNAPSHOT_NAME = "jad-openai-curated-gmail"
+CURATED_SOURCE_NAME = "openai-curated"
 TEMPLATE = Path(__file__).resolve().parents[1] / "assets" / "demo-project"
 CAPSULE_MARKER = ".customer-complaint-demo-capsule.json"
 
@@ -44,19 +45,47 @@ def run_codex(args: list[str], codex_home: Path, *, capture: bool = False) -> st
 def discover_marketplaces(bootstrap_home: Path) -> dict[str, str]:
     payload = json.loads(run_codex(["plugin", "marketplace", "list", "--json"], bootstrap_home, capture=True))
     discovered: dict[str, str] = {}
+    required_sources = set(REQUIRED_MARKETPLACES) | {CURATED_SOURCE_NAME}
     for item in payload.get("marketplaces", []):
         name = item.get("name")
         source_info = item.get("marketplaceSource") or {}
         source = source_info.get("source") or item.get("root")
-        if name in REQUIRED_MARKETPLACES and isinstance(source, str) and source:
+        if name in required_sources and isinstance(source, str) and source:
             discovered[name] = source
-    missing = sorted(set(REQUIRED_MARKETPLACES) - set(discovered))
+    missing = sorted(required_sources - set(discovered))
     if missing:
         raise RuntimeError(
             "The invoking Codex home does not expose the official marketplace source(s): "
             + ", ".join(missing)
         )
     return discovered
+
+
+def prepare_curated_gmail_snapshot(source_root: Path, runtime_dir: Path) -> Path:
+    source_manifest_path = source_root / ".agents" / "plugins" / "marketplace.json"
+    source_plugin = source_root / "plugins" / "gmail"
+    if not source_manifest_path.is_file() or not source_plugin.is_dir():
+        raise RuntimeError(f"cannot prepare Gmail snapshot from {source_root}")
+    source_manifest = json.loads(source_manifest_path.read_text(encoding="utf-8"))
+    plugin_entry = next(
+        (entry for entry in source_manifest.get("plugins", []) if entry.get("name") == "gmail"),
+        None,
+    )
+    if plugin_entry is None:
+        raise RuntimeError(f"Gmail is not present in the curated marketplace at {source_root}")
+
+    snapshot = runtime_dir / "official-marketplaces" / "gmail"
+    shutil.copytree(source_plugin, snapshot / "plugins" / "gmail")
+    snapshot_manifest = {
+        "name": CURATED_SNAPSHOT_NAME,
+        "interface": source_manifest.get("interface", {"displayName": "JAD Gmail dependency"}),
+        "plugins": [plugin_entry],
+    }
+    write_text(
+        snapshot / ".agents" / "plugins" / "marketplace.json",
+        json.dumps(snapshot_manifest, indent=2, ensure_ascii=False) + "\n",
+    )
+    return snapshot
 
 
 def write_text(path: Path, content: str) -> None:
@@ -152,13 +181,18 @@ def main() -> int:
         )
 
         for marketplace_name, source in official_sources.items():
-            run_codex(["plugin", "marketplace", "add", source], staged_runtime)
+            if marketplace_name == CURATED_SOURCE_NAME:
+                snapshot = prepare_curated_gmail_snapshot(Path(source), staged_runtime)
+                run_codex(["plugin", "marketplace", "add", str(snapshot)], staged_runtime)
+            else:
+                run_codex(["plugin", "marketplace", "add", source], staged_runtime)
         run_codex(
             ["plugin", "marketplace", "add", PLUGIN_REPOSITORY, "--ref", args.marketplace_ref],
             staged_runtime,
         )
         for plugin_selector in REQUIRED_MARKETPLACES.values():
             run_codex(["plugin", "add", plugin_selector], staged_runtime)
+        run_codex(["plugin", "add", f"gmail@{CURATED_SNAPSHOT_NAME}"], staged_runtime)
         run_codex(["plugin", "add", PLUGIN_SELECTOR], staged_runtime)
 
         staged_project.rename(project_dir)
