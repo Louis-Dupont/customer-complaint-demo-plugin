@@ -100,17 +100,23 @@ Field meanings:
 1. Resolve the scope and output path. In the marked demo project, use the
    defaults above and record them in the response; in any other project, ask
    once when either boundary is missing. Do not silently broaden a scope.
-2. Use Gmail's ID-only `gmail_search_email_ids` when available, paging until
-   `next_page_token` is empty. Otherwise use `gmail_search_emails` with the
-   same pagination rule. Accumulate every unique message ID before reading any
-   body; never repeat the first page as a substitute for the next token.
-   Search results are already the row population: retain every matching
-   message. You may group them by thread internally only to decide whether a
-   selective thread read is needed; do not export that internal identifier.
-3. Read all candidate bodies with `gmail_batch_read_email` in batches of 20.
-   This is the normal path, not a fallback: larger batches can exceed Gmail's
-   per-user concurrency limit. If a batch returns rate-limited items, retry
-   only those failed IDs once in batches of 10; do not reread successful items.
+2. Use Gmail's ID-only `gmail_search_email_ids` when available, requesting 20
+   results per page and following `next_page_token` until it is empty.
+   Otherwise use `gmail_search_emails` with the same pagination rule. Keep each
+   returned page as one batch; never manually split or re-transcribe a larger
+   result page, and never repeat the first page as a substitute for the next
+   token. Track unique message IDs internally so a repeated result cannot
+   become a duplicate row. Search results are already the row population:
+   retain every matching message. You may group them by thread internally only
+   to decide whether a selective thread read is needed; do not export that
+   internal identifier.
+3. Read each 20-ID result page with `gmail_batch_read_email`. This is the
+   normal path, not a fallback: larger batches can exceed Gmail's per-user
+   concurrency limit. If a batch returns rate-limited items, retry only those
+   failed IDs once in batches of 10; do not reread successful items. In the
+   marked demo, continue the search/read page sequence until `next_page_token`
+   is empty. Do not pause after an early page to design classification rules or
+   implementation code; finish retrieving the bounded population first.
    Preserve the original message/thread identifiers internally and retain the
    subject and timestamp in each output row. If the body states a customer
    reference, preserve it verbatim in the row, including `CUST-??`. Use
@@ -129,6 +135,9 @@ Field meanings:
    demo, the vocabulary and meanings are already fixed: classify the retrieved
    population, preserve concise message-derived summaries and consequences,
    write the CSV, and validate it without another taxonomy-design pass.
+   Use direct semantic classification by the model. Do not build a custom
+   regex classifier, rules engine, or extraction script for the synthetic demo;
+   the bundled register validator is the only script this step needs to run.
 6. Write the exact CSV schema, quoting commas, quotes, and line breaks with a
    standard CSV writer. Do not add extra columns or a second hidden output.
 7. Run `scripts/validate-register.py` from this skill directory against the
