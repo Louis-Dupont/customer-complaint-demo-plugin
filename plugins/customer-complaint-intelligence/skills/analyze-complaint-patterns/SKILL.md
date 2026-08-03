@@ -70,6 +70,7 @@ The skill must leave these artifacts in `workspace/analysis/`:
 
 Each summary keeps case count, matched unique-customer count, unmatched-case
 count, high/urgent case count, and average extraction confidence visible.
+
 - An interactive visualization shown in the Codex conversation through
   `@visualize`. If the human explicitly asks to preserve it, export it to
   `workspace/analysis/complaint-patterns.html`; do not pretend a screenshot is
