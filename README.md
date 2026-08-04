@@ -51,7 +51,7 @@ sidebar project record and reuse it when the same path is initialized again.
 ## Skills
 
 - `extract-gmail-complaints`: turn complaint emails into a structured CSV.
-- `analyze-complaint-patterns`: join the register with customer data and build analysis artifacts.
+- `analyze-complaint-patterns`: map the full inbox, then guide a human-selected pattern deep dive.
 - `investigate-complaint-evidence`: inspect one finding through supporting and contradictory source emails.
 - `apply-complaint-labels`: preview and apply an explicitly approved Gmail-labeling decision.
 - `initialize-customer-complaint-demo`: create the local demo project.

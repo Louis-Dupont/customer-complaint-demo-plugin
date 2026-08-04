@@ -155,6 +155,22 @@ class ContractTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("customers CSV must contain customer_id", result.stderr)
 
+    def test_analysis_skill_is_staged_without_a_hardcoded_demo_finding(self) -> None:
+        skill = (SKILLS / "analyze-complaint-patterns" / "SKILL.md").read_text(encoding="utf-8")
+        metadata = (SKILLS / "analyze-complaint-patterns" / "agents" / "openai.yaml").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("Stage 1 — Inbox Map", skill)
+        self.assertIn("Stage 2 — Pattern Deep Dive", skill)
+        self.assertIn("stop", skill[skill.index("## Stage 1 — Inbox Map"):skill.index("## Stage 2 — Pattern Deep Dive")])
+        self.assertIn("follow-up actions", skill)
+        self.assertIn("waiting for the human", skill)
+        self.assertNotIn("short_delivery", skill)
+        self.assertNotIn("hotel/East", skill)
+        self.assertNotIn("hotel customers on the East", skill)
+        self.assertIn("wait for my choice", metadata)
+
     def test_delete_demo_previews_then_deletes_only_marked_project(self) -> None:
         script = SKILLS / "delete-customer-complaint-demo" / "scripts" / "delete_demo.py"
         with tempfile.TemporaryDirectory() as directory:

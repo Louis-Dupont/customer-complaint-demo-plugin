@@ -1,7 +1,7 @@
 interface:
   display_name: "Analyze complaint patterns"
   short_description: "Analyze complaint messages with customer context"
-  default_prompt: "In the marked Customer Complaint Demo project, analyze workspace/complaints.csv with data/customers.csv, write the defined analysis handoff, and create the interactive visualization. Outside that project, ask for missing inputs."
+  default_prompt: "In the marked Customer Complaint Demo project, begin the staged complaint analysis with the complete Inbox Map, recommend one meaningful direction, and wait for my choice before creating the Pattern Deep Dive. Outside that project, ask for missing inputs."
 
 policy:
   allow_implicit_invocation: true

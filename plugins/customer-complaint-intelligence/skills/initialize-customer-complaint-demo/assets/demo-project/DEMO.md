@@ -76,17 +76,22 @@ Invoke the analysis skill. It uses the extracted register, `data/customers.csv`,
 and `workspace/analysis/` automatically in this project; you can also use this
 explicit prompt:
 
-> Combine `workspace/complaints.csv` with `data/customers.csv`. Help me understand what deserves attention, and create an interactive visualization.
+> Combine `workspace/complaints.csv` with `data/customers.csv`. Help me understand what is happening. Start with the complete Inbox Map, recommend the most useful direction to explore, and wait for my choice.
 
 This is the first step that joins the extracted customer reference to the local
 customer table; extraction itself does not consult that table.
 
-Start with the obvious volume view, then ask:
+The first response should already provide orientation across the complete inbox.
+Use its recommended visual action, or reply naturally with the pattern you want
+to understand. For the prepared story, the recommended concentration should
+lead naturally to a focused deep dive; it must not be hardcoded into the skill.
 
-> What changes if we look at distinct customers, venue type, route, service
-> plan, and delivery volume rather than raw email count?
+The second response combines the concentration, affected customers, repeat
+contacts, exceptions, and underlying complaint rows in one focused visual. Use
+the source-investigation action only after that deep dive is understandable.
 
-Use `@visualize` for the deep analysis moment.
+Both surfaces use `@visualize`; ordinary filtering stays inside the visuals,
+while the human's pattern choice creates the second Codex turn.
 
 ### 3. Investigate
 

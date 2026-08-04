@@ -9,7 +9,7 @@ This demo shows how a person can use Codex to turn that inbox into business unde
 ## The skills
 
 - **Extract Gmail complaints** — turns the selected emails into a structured CSV with a customer reference, subject, and complaint details.
-- **Analyze complaint patterns** — combines complaints with customer data and creates a deep interactive visualization.
+- **Analyze complaint patterns** — maps the full inbox, then guides you into an interactive deep dive on the pattern you choose.
 - **Investigate complaint evidence** — traces a selected finding back to supporting emails and counterexamples.
 - **Apply complaint labels** — previews and applies a human-approved handling decision in Gmail.
 - **Initialize the demo** — creates the local demo project; it is setup, not part of the business workflow.

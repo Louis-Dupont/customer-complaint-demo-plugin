@@ -1,6 +1,6 @@
 {
   "name": "customer-complaint-intelligence",
-  "version": "0.3.17",
+  "version": "0.3.18",
   "description": "Bounded Codex skills for complaint intelligence plus a local Customer Complaint Demo initializer.",
   "author": {
     "name": "JAD"
@@ -32,7 +32,7 @@
       "Initialize the Customer Complaint Demo project.",
       "Delete the Customer Complaint Demo project.",
       "Turn my Gmail complaints into a structured CSV.",
-      "Analyze the complaint register with my customer data and investigate the evidence."
+      "Map the complaint inbox with my customer data, then guide me into a pattern deep dive."
     ]
   }
 }
