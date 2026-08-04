@@ -60,6 +60,8 @@ python3 scripts/prepare-analysis.py "<complaints.csv>" "<customers.csv>" "<analy
 
 Use the resulting `analysis-data.csv`, summary tables, and
 `analysis-metadata.json` as the common analytical population for both stages.
+Refreshing this preparation removes any `findings.md` from an earlier deep dive:
+the Inbox Map has not selected a current conclusion yet.
 Keep complaint messages, unique matched customers, unmatched messages, and
 repeat contacts distinct. Treat customer attributes as joined context, not as
 facts extracted from Gmail. Use customer-population or service-volume

@@ -77,6 +77,8 @@ class ContractTests(unittest.TestCase):
             complaints = root / "complaints.csv"
             customers = root / "customers.csv"
             output = root / "analysis"
+            output.mkdir()
+            (output / "findings.md").write_text("stale conclusion\n", encoding="utf-8")
             rows = [
                 self.complaint_row(subject="Known customer", customer_reference="CUST-001"),
                 self.complaint_row(subject="Ambiguous customer", customer_reference="CUST-??"),
@@ -101,6 +103,7 @@ class ContractTests(unittest.TestCase):
             self.assertEqual(metadata["complaint_message_count"], 4)
             self.assertEqual(metadata["matched_message_count"], 1)
             self.assertEqual(metadata["unmatched_message_count"], 3)
+            self.assertFalse((output / "findings.md").exists())
 
             with (output / "analysis-data.csv").open(encoding="utf-8", newline="") as handle:
                 joined = list(csv.DictReader(handle))

@@ -140,6 +140,9 @@ def main() -> None:
         joined.append(output)
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    # A refreshed Inbox Map has no selected pattern yet. Remove any conclusion
+    # left by an earlier deep dive so it cannot appear current.
+    (args.output_dir / "findings.md").unlink(missing_ok=True)
     joined_fields = COMPLAINT_FIELDS + [
         "month",
         "customer_match_status",
