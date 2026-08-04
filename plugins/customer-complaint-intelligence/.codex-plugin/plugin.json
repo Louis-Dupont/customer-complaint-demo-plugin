@@ -1,6 +1,6 @@
 {
   "name": "customer-complaint-intelligence",
-  "version": "0.3.16",
+  "version": "0.3.17",
   "description": "Bounded Codex skills for complaint intelligence plus a local Customer Complaint Demo initializer.",
   "author": {
     "name": "JAD"
@@ -18,7 +18,7 @@
   "interface": {
     "displayName": "Customer Complaint Intelligence",
     "shortDescription": "Turn complaint emails into evidence and action.",
-    "longDescription": "Five bounded skills help a human create a local complaint demo project, extract complaint data from Gmail, analyze it with local customer data, investigate findings through source emails, and apply approved labels back to Gmail.",
+    "longDescription": "Six bounded skills help a human create or delete a local complaint demo project, extract complaint data from Gmail, analyze it with local customer data, investigate findings through source emails, and apply approved labels back to Gmail.",
     "developerName": "JAD",
     "category": "Productivity",
     "capabilities": [
@@ -26,10 +26,11 @@
       "Analyze and visualize customer patterns",
       "Investigate source evidence",
       "Apply approved Gmail labels",
-      "Create a local demo project"
+      "Create and delete a local demo project"
     ],
     "defaultPrompt": [
       "Initialize the Customer Complaint Demo project.",
+      "Delete the Customer Complaint Demo project.",
       "Turn my Gmail complaints into a structured CSV.",
       "Analyze the complaint register with my customer data and investigate the evidence."
     ]

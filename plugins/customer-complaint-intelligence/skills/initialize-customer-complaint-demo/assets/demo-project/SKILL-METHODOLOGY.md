@@ -15,7 +15,7 @@ Instead, we used the natural handoffs in the work as the skill boundaries:
 
 No analytical skill owns the full workflow. The user can invoke one step, inspect its output, ask an ordinary follow-up question, or continue to the next skill. The demo sequence lives in the demo runbook rather than inside the plugin.
 
-The initializer is a fifth skill with a different responsibility: it creates and removes the disposable local project but performs none of the complaint workflow. Keeping setup separate prevents convenience packaging from turning into an end-to-end business skill.
+The initializer and deletion skill have lifecycle responsibilities: one creates the disposable local project and the other removes it. Neither performs complaint work. Keeping setup and cleanup separate prevents convenience packaging from turning into an end-to-end business skill.
 
 ## How each contract was written
 

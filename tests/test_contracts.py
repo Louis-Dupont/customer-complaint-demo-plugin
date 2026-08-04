@@ -155,6 +155,85 @@ class ContractTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("customers CSV must contain customer_id", result.stderr)
 
+    def test_delete_demo_previews_then_deletes_only_marked_project(self) -> None:
+        script = SKILLS / "delete-customer-complaint-demo" / "scripts" / "delete_demo.py"
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory) / "Customer Complaint Demo"
+            project.mkdir()
+            marker = {
+                "schema_version": 2,
+                "display_name": "Customer Complaint Demo",
+                "slug": "customer-complaint-demo",
+                "project_directory": str(project),
+            }
+            (project / ".customer-complaint-demo-project.json").write_text(
+                json.dumps(marker), encoding="utf-8"
+            )
+            (project / "demo-output.txt").write_text("temporary", encoding="utf-8")
+
+            preview = subprocess.run(
+                [sys.executable, str(script), "--project-dir", str(project)],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(preview.returncode, 0, preview.stderr)
+            self.assertTrue(project.exists())
+            self.assertIn("No files were removed", preview.stdout)
+
+            deletion = subprocess.run(
+                [sys.executable, str(script), "--project-dir", str(project), "--yes"],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(deletion.returncode, 0, deletion.stderr)
+            self.assertFalse(project.exists())
+
+    def test_delete_demo_refuses_unmarked_directory(self) -> None:
+        script = SKILLS / "delete-customer-complaint-demo" / "scripts" / "delete_demo.py"
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory) / "Customer Complaint Demo"
+            project.mkdir()
+            result = subprocess.run(
+                [sys.executable, str(script), "--project-dir", str(project), "--yes"],
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertTrue(project.exists())
+            self.assertIn("refusing to delete", result.stderr)
+
+    def test_demo_can_be_deleted_and_initialized_again(self) -> None:
+        initialize = SKILLS / "initialize-customer-complaint-demo" / "scripts" / "initialize.py"
+        delete = SKILLS / "delete-customer-complaint-demo" / "scripts" / "delete_demo.py"
+        with tempfile.TemporaryDirectory() as directory:
+            project_root = Path(directory)
+            project = project_root / "Customer Complaint Demo"
+            create_command = [
+                sys.executable,
+                str(initialize),
+                "--project-root",
+                str(project_root),
+                "--no-open",
+            ]
+
+            first = subprocess.run(create_command, capture_output=True, text=True)
+            self.assertEqual(first.returncode, 0, first.stderr)
+            self.assertTrue((project / ".customer-complaint-demo-project.json").is_file())
+            self.assertTrue((project / "README.md").is_file())
+
+            removal = subprocess.run(
+                [sys.executable, str(delete), "--project-dir", str(project), "--yes"],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(removal.returncode, 0, removal.stderr)
+            self.assertFalse(project.exists())
+
+            second = subprocess.run(create_command, capture_output=True, text=True)
+            self.assertEqual(second.returncode, 0, second.stderr)
+            self.assertTrue((project / ".customer-complaint-demo-project.json").is_file())
+            self.assertTrue((project / "README.md").is_file())
+
 
 if __name__ == "__main__":
     unittest.main()

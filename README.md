@@ -1,9 +1,9 @@
 # Customer Complaint Intelligence
 
 This repository is the client-deliverable Codex plugin. It contains four
-reusable complaint-workflow skills and an initializer for a fictional local
-demo project. The initializer carries the template as an asset; the generated
-project remains separate from the plugin installation.
+reusable complaint-workflow skills and two lifecycle skills for a fictional
+local demo project. The initializer carries the template as an asset; the
+generated project remains separate from the plugin installation.
 
 ## Install in Codex
 
@@ -33,6 +33,12 @@ Plugins and connector authentication belong to the user's Codex environment,
 not exclusively to this project. Removing the demo deletes only its local
 project files.
 
+To clean up before another rehearsal, invoke
+`$customer-complaint-intelligence:delete-customer-complaint-demo` from another
+project. It deletes only the marked local demo folder and archives tasks rooted
+at that exact path when task archiving is available. Codex may retain the saved
+sidebar project record and reuse it when the same path is initialized again.
+
 ## Requirements
 
 - Codex.
@@ -48,7 +54,8 @@ project files.
 - `analyze-complaint-patterns`: join the register with customer data and build analysis artifacts.
 - `investigate-complaint-evidence`: inspect one finding through supporting and contradictory source emails.
 - `apply-complaint-labels`: preview and apply an explicitly approved Gmail-labeling decision.
-- `initialize-customer-complaint-demo`: create or remove the local demo project.
+- `initialize-customer-complaint-demo`: create the local demo project.
+- `delete-customer-complaint-demo`: delete the marked demo folder and archive its demo tasks.
 
 In the marked demo project, the workflow skills also carry the demo's defined
 scope and handoff paths, so they can be invoked without repeating setup

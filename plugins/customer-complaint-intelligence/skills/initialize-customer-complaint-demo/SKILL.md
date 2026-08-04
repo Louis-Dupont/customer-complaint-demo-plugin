@@ -1,6 +1,6 @@
 ---
 name: initialize-customer-complaint-demo
-description: "Create the disposable Customer Complaint Demo as a real local Codex project in the user's existing Codex environment, ensure its required plugins are available, and open a welcome task. Use when a user asks to set up, bootstrap, or remove this demo. Do not seed or recreate Gmail fixture messages."
+description: "Create the disposable Customer Complaint Demo as a real local Codex project in the user's existing Codex environment, ensure its required plugins are available, and open a welcome task. Use when a user asks to set up, bootstrap, or initialize this demo. Do not remove the demo or seed or recreate Gmail fixture messages."
 ---
 
 # Initialize Customer Complaint Demo
@@ -57,16 +57,5 @@ retry it for cosmetic formatting: the demo must open with one task containing
 one introduction.
 
 The `.eml` files are local scaffolding only. Do not send them, recreate Gmail
-messages, or modify the mailbox during initialization.
-
-## Remove
-
-Only after the human explicitly asks to remove the demo, run:
-
-```text
-python3 scripts/remove.py --project-dir "$HOME/Projects/Customer Complaint Demo" --yes
-```
-
-The command checks the generated marker and removes only the local demo
-project. It does not uninstall shared plugins, disconnect Gmail, remove tasks,
-or change any other Codex project.
+messages, or modify the mailbox during initialization. Use the separate
+`delete-customer-complaint-demo` skill when the human wants to remove the demo.

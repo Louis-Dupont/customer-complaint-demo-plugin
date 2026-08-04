@@ -17,6 +17,7 @@ EXPECTED_SKILLS = {
     "investigate-complaint-evidence",
     "apply-complaint-labels",
     "initialize-customer-complaint-demo",
+    "delete-customer-complaint-demo",
 }
 
 
@@ -56,6 +57,7 @@ def main() -> None:
 
     assert (PLUGIN / "skills" / "extract-gmail-complaints" / "scripts" / "validate-register.py").is_file()
     assert (PLUGIN / "skills" / "analyze-complaint-patterns" / "scripts" / "prepare-analysis.py").is_file()
+    assert (PLUGIN / "skills" / "delete-customer-complaint-demo" / "scripts" / "delete_demo.py").is_file()
     demo_template = PLUGIN / "skills" / "initialize-customer-complaint-demo" / "assets" / "demo-project"
     assert demo_template.is_dir(), demo_template
     for fixture in list(PLUGIN.rglob("*.eml")) + list(PLUGIN.rglob("*.csv")):

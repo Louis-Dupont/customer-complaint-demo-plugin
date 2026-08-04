@@ -1,0 +1,7 @@
+interface:
+  display_name: "Delete Customer Complaint Demo"
+  short_description: "Remove the local demo and archive its tasks"
+  default_prompt: "Use $delete-customer-complaint-demo to remove the local Customer Complaint Demo."
+
+policy:
+  allow_implicit_invocation: false
