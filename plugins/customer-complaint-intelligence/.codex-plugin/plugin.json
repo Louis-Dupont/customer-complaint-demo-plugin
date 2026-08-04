@@ -1,6 +1,6 @@
 {
   "name": "customer-complaint-intelligence",
-  "version": "0.3.14",
+  "version": "0.3.15",
   "description": "Bounded Codex skills for complaint intelligence plus a local Customer Complaint Demo initializer.",
   "author": {
     "name": "JAD"
