@@ -111,7 +111,8 @@ Field meanings:
    Search results are already the row population:
    retain every matching message. You may group them by thread internally only
    to decide whether a selective thread read is needed; do not export that
-   internal identifier.
+   internal identifier. Use the named Gmail operations directly; do not dump or
+   search the full tool catalog unless one of them is genuinely unavailable.
 3. Read each non-empty result page with `gmail_batch_read_email`. This is the
    normal path, not a fallback: larger batches can exceed Gmail's per-user
    concurrency limit. If a batch returns rate-limited items, retry only those
@@ -124,7 +125,14 @@ Field meanings:
    reference, preserve it verbatim in the row, including `CUST-??`. Use
    `gmail_read_email_thread` only once for a thread that genuinely has more
    than one matching message, or when the batch body is missing or leaves the
-   case boundary unresolved. Never read every unique thread one at a time.
+   case boundary unresolved. Retain the first result page exactly like every
+   later page; never reconstruct or special-case it manually. Never read every
+   unique thread one at a time. Finish retrieving the complete bounded
+   population before classification. Then inspect one retained page at a time,
+   surface it once if the connector wrapper kept it outside model-visible
+   output, and immediately build its keyed row objects. Do not surface or
+   classify that page again after those complete keyed rows exist; a page is
+   complete only when it is annotated, not merely when its bodies were read.
 4. Exclude messages that are clearly not customer complaints when the scope
    also contains unrelated mail. Report the excluded count; do not silently
    imply that the mailbox was entirely complaints. In the marked Customer
@@ -140,17 +148,37 @@ Field meanings:
    Use direct semantic classification by the model. Do not build a custom
    regex classifier, rules engine, or extraction script for the synthetic demo;
    the bundled register validator is the only script this step needs to run.
+   Work one retrieved page at a time and keep every derived field attached to
+   its source message through the Gmail message ID as an internal join key.
+   Build complete row objects, not separate positional arrays for categories,
+   consequences, severities, or other annotations. Copy subject, timestamp,
+   and body-stated reference from that same source object; never retype those
+   fields from memory. The internal ID is only an assembly guard and must not
+   appear in the CSV. Before combining pages, require the source-ID set and
+   annotated-row-ID set to match exactly. While emitting each row, reject an
+   obvious contradiction between its source message and derived fields; do not
+   add a second full rewrite or stylistic-polish pass. Concise wording may repeat
+   when messages report the same thing. In the marked demo, Gmail is the
+   extraction source; do not consult the local fixture manifest or `.eml` files
+   as an answer key.
 6. Write the exact CSV schema, quoting commas, quotes, and line breaks with a
    standard CSV writer. Do not add extra columns or a second hidden output.
 7. Run `scripts/validate-register.py` from this skill directory against the
-   CSV. Fix malformed output before reporting success; do not hand-edit the
-   CSV to conceal an extraction problem.
+   CSV. This proves the handoff's structure and field constraints, not the
+   semantic accuracy of the classifications; the source-paired review in the
+   previous step owns that check. Fix malformed output before reporting
+   success; do not hand-edit the CSV to conceal an extraction problem.
 8. Report the output path, search scope, number of messages searched, unique
    threads inspected, complaint messages written, and excluded messages/threads.
    In the marked demo project, stop before declaring success if the complete paginated search does not yield exactly
    120 messages, if the register does not contain exactly 120 rows, or if any
    row is missing `subject`; report the discrepancy instead of silently
    presenting a partial register.
+
+For the marked demo, the normal execution shape is the bounded paginated
+search, six page-sized body reads, one keyed row-assembly pass per page, and one
+structural validator run. Do not add exploratory fixture inspection, classifier
+implementation, or repeated body dumps to that path.
 
 ## Failure and stopping rules
 

@@ -65,5 +65,6 @@ The live rehearsal exposed details that static review did not: Gmail search and 
 - Retrieval and interpretation should remain separate phases. Completing the small body batches before classification prevents an early sample from triggering unnecessary classifier design.
 - Connector operations need explicit safe shapes: paginate IDs, read bodies in modest batches, retry only failures, and write back only the exact approved message IDs rather than expanding threads.
 - A connector batch can appear successful while returning only part of the requested population. This is easy to miss when the overall call does not fail, and it can silently make every downstream artifact incomplete.
+- A batch can be structurally complete while its derived fields have drifted onto neighboring source records. Row counts, schemas, and allowed values can all pass even though the handoff is semantically wrong.
 - Real forward use is part of skill design. Several important contract refinements appeared only when one skill's actual output became the next skill's input.
 - The four workflow skills form a system through explicit artifacts, not through an orchestrator skill. That makes every step independently useful and keeps ordinary conversation available between them; the fifth skill only establishes the project in which they run.

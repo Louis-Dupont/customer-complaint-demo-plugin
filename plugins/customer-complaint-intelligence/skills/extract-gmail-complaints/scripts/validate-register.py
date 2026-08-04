@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the handoff CSV produced by extract-gmail-complaints."""
+"""Validate the structural handoff produced by extract-gmail-complaints."""
 
 from __future__ import annotations
 
@@ -83,7 +83,7 @@ def main(argv: list[str]) -> int:
     except (OSError, ValueError) as exc:
         print(f"invalid complaint register: {exc}", file=sys.stderr)
         return 1
-    print(f"valid complaint register: {count} message rows")
+    print(f"structurally valid complaint register: {count} message rows")
     return 0
 
 

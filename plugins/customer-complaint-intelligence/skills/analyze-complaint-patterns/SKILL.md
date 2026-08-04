@@ -32,7 +32,17 @@ only to the marked demo project. In a normal client project, ask for any
 missing path or period boundary instead of guessing.
 
 If either input is missing, malformed, duplicated, or has substantial unmatched
-customer references, report that before interpreting the results.
+customer references, report that before interpreting the results. In the marked
+demo, a structurally valid register is not automatically semantically valid:
+before preparation, inspect it once for obvious contradictions between each
+subject and its complaint fields. If derived fields appear to have drifted onto
+neighboring messages, stop before creating analysis artifacts, show a few exact
+examples, and ask for extraction to be rerun. Do not read Gmail or repair the
+register in this skill. Outside the controlled demo, a generic or stale subject
+alone is not evidence that the body-derived classification is wrong. After any
+readiness failure, do not present newly generated tables or findings as current;
+mention pre-existing artifacts only when they are present and could be confused
+with this invocation.
 
 ## Procedure
 
@@ -40,8 +50,10 @@ customer references, report that before interpreting the results.
    three defaults above and derive the period from the register; otherwise ask
    when a boundary is missing. Do not silently choose a different mailbox,
    customer table, or date range.
-2. From the plugin skill directory, run the preparation script, passing every
-   path as its own quoted argument because project paths may contain spaces:
+2. Resolve the directory containing this `SKILL.md` and run the preparation
+   script from that exact skill directory—not from the plugin root and not by
+   searching the installed package tree. Pass every path as its own quoted
+   argument because project paths may contain spaces:
    `python3 scripts/prepare-analysis.py "<complaints.csv>" "<customers.csv>"
    "<output_dir>"`. This is the first step that reads the customer
    table and joins the raw `customer_reference` from each message to
@@ -69,17 +81,20 @@ customer references, report that before interpreting the results.
    after joining complaint references to the customer table. Keep other useful
    observations secondary to this reveal because it is the handoff to the
    investigation step.
-6. Invoke the installed `@visualize` capability directly on
+6. Use the installed `visualize:visualize` skill on
    `workspace/analysis/analysis-data.csv` and the generated summary tables.
+   This is a skill handoff, not a lookup for a tool named `visualize`: load the
+   visualization skill from the session's available skills and apply its
+   inline-output contract for this visualization handoff. Do not search
+   `ALL_TOOLS` or plugin directories for a visualization mechanism.
    The visualization must allow a human to move from an overview to the cases
    behind a finding. In the marked demo, prefer a focused path—category
    overview, the hotel/East short-delivery subset versus its exceptions, then
    the underlying rows—over a generic dashboard with many unrelated controls.
-   Do not search plugin directories for visualization
-   instructions or create a second uncontracted HTML output. If the inline
-   visualization surface is unavailable, report that explicitly after leaving
-   the tables and `findings.md`; do not claim the analysis step is complete or
-   loop trying to discover another visualization mechanism.
+   Do not create a second uncontracted HTML output. If the visualization skill
+   is unavailable, report that explicitly after leaving the tables and
+   `findings.md`; do not claim the analysis step is complete or loop trying to
+   discover another visualization mechanism.
 
 ## Outputs
 
@@ -99,8 +114,8 @@ The skill must leave these artifacts in `workspace/analysis/`:
 Each summary keeps case count, matched unique-customer count, unmatched-case
 count, and high/urgent case count visible.
 
-- An interactive visualization shown in the Codex conversation through
-  `@visualize`. If the human explicitly asks to preserve it, export it to
+- An interactive visualization shown in the Codex conversation through the
+  `visualize:visualize` skill. If the human explicitly asks to preserve it, export it to
   `workspace/analysis/complaint-patterns.html`; do not pretend a screenshot is
   the analysis output.
 
